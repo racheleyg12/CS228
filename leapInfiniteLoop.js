@@ -3,6 +3,7 @@ var i = 0;
 var x = window.innerWidth/2.0;
 var y = window.innerHeight/2.0; 
 Leap.loop(controllerOptions, function(frame){
+	clear();
 	console.log(i); 
 	i=i+1;
 	//Create a random integer between -1 and +1
