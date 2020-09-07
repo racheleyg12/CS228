@@ -1,7 +1,7 @@
 var controllerOptions = {};
 var i = 0;
-var x = window.innerWidth;
-var y = window.innerHeight;
+var x = window.innerWidth/2.0;
+var y = window.innerHeight/2.0; 
 Leap.loop(controllerOptions, function(frame){
 	console.log(i); 
 	i=i+1;
