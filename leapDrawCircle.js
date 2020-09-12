@@ -1,4 +1,3 @@
-
 //Global Variables
 var controllerOptions = {};
 var x = window.innerWidth/2.0;

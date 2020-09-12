@@ -37,51 +37,51 @@ function HandleHand(hand) {
 
 
 function HandleFinger(finger) {
-	//Grabs only the index finger
-	if (finger.type == 1){
-		//Grabs the x,y,z position of the tip of the finger
-		var position = finger.tipPosition;
-		x = position[0];
-		y = position[1];
-		z = position[2];
+	//Grabs all fingers
+	
+	//Grabs the x,y,z position of the tip of the finger
+	var position = finger.tipPosition;
+	x = position[0];
+	y = position[1];
+	z = position[2];
 
-		//Actual x & y translated to the screen
-		var screenX = x;
-		var screenY = z-y;
+	//Actual x & y translated to the screen
+	var screenX = x;
+	var screenY = z-y;
 
-		//console.log(x);
+	//console.log(x);
 
-		//Check min & max
-		if(x < rawXMin){
-			rawXMin = x;
-			//-364.348
-		}
-		if((z-y) < rawYMin){
-			rawYMin = (z-y);
-			//-631.54
-		}
-		if(x > rawXMax){
-			rawXMax = x;
-			//217.779
-		}
-		if((z-y) > rawYMax){
-			rawYMax = screenY;
-			//59.44879999999999
-		}
-
-		//Translate the finger positions into canvas positions.
-		var canvasX = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin)
-		var canvasY = (((z-y)-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin)
-
-		//Draw a circle at location (x, y) with a diameter of 50.
-		circle(canvasX, canvasY, 50);
-
-
-		//Draw a circle at location (x, y) with a diameter of 50.
-		//circle((x)+(window.innerWidth/2), (z-y)+(window.innerHeight/2), 50);
-
-
+	//Check min & max
+	if(x < rawXMin){
+		rawXMin = x;
+		//-364.348
 	}
+	if((z-y) < rawYMin){
+		rawYMin = (z-y);
+		//-631.54
+	}
+	if(x > rawXMax){
+		rawXMax = x;
+		//217.779
+	}
+	if((z-y) > rawYMax){
+		rawYMax = screenY;
+		//59.44879999999999
+	}
+
+	//Translate the finger positions into canvas positions.
+	var canvasX = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin)
+	var canvasY = (((z-y)-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin)
+
+	//Draw a circle at location (x, y) with a diameter of 50.
+	circle(canvasX, canvasY, 50);
+
+
+	//Draw a circle at location (x, y) with a diameter of 50.
+	//circle((x)+(window.innerWidth/2), (z-y)+(window.innerHeight/2), 50);
+
+
+	
 }
 
 
