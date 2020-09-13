@@ -1,11 +1,9 @@
 
 //Global Variables
 var controllerOptions = {};
-//var x = window.innerWidth/2.0;
-//var y = window.innerHeight/2.0; 
-var rawXMin = -300; //-300
+var rawXMin = -10; //-300
 var rawXMax = 20; //200
-var rawYMin = -300; //-400
+var rawYMin = -10; //-400, -300
 var rawYMax = 20; //30
 
 //Infinite Loop to catch each frame
@@ -14,7 +12,6 @@ Leap.loop(controllerOptions, function(frame){
 clear();
 	
 HandleFrame(frame);
-
 });
 
 //Handles a single frame
@@ -33,12 +30,14 @@ function HandleHand(hand) {
 	//Grabs fingers
 	var fingers = hand.fingers;
 	//Draws all five finger bones(1-4) at a time
+
 	//Distal phalanges are bones.type = 3
 	var l = 3;
+
 	//We know there are 4 bones in each finger
-	for (j=0; j<3; j++){
+	for (var j=0; j<4; j++){
 		//All five bones of a type at a time
-		for(k=0; k<fingers.length; k++){
+		for(var k=0; k<fingers.length; k++){
 			//Gets all bones of a finger
 			var bones = fingers[k].bones;
 			//Draws finger
@@ -46,6 +45,16 @@ function HandleHand(hand) {
 		}
 		l--;
 	}
+
+	// for(var k=0; k<fingers.length; k++){
+	// 	//Gets all bones of a finger
+	// 	var bones = fingers[k].bones;
+	// 	console.log(fingers[k].type)
+	// 	console.log(bones[l].type)
+	// 	//Draws finger
+	// 	HandleBone(bones[l]);
+	// }
+
 }
 
 //Handles a single finger
@@ -54,7 +63,6 @@ function HandleFinger(finger) {
 	var bones = finger.bones;
 	//Iterates over the bones in each finger
 	for (i=0; i<bones.length; i++){
-		//console.log(i);
 		HandleBone(finger.bones[i]);
 	}	
 }
@@ -82,18 +90,17 @@ function HandleBone(bone){
 	//Determine strokeWeight
 	if (bone.type == 0){
 		strokeWeight(4);
-		stroke(220)
+		stroke(210);
 	} else if (bone.type == 1){
-		strokeWeight(3); // Beastly
-		stroke(120);
+		strokeWeight(3); 
+		stroke(150);
 	} else if (bone.type == 2){
-		strokeWeight(2); // Beastly
+		strokeWeight(2); 
 		stroke(50);
 	} else {
-		strokeWeight(1); // Beastly
+		strokeWeight(1); //3
 		stroke(51);
 	}
-
 	//Draw lines
 	line(newTipPosition[0], newTipPosition[1], newBasePostion[0], newBasePostion[1]);	
 }
@@ -101,19 +108,13 @@ function HandleBone(bone){
 //Translate the positions into canvas positions.
 //MAKE SURE Y = Z-Y
 function TransformCoordinates(x,y) {
-	//Grabs the x,y,z position of the tip of the finger
-	// var position = finger.tipPosition;
-	// var x = position[0];
-	// var y = position[1];
-	// var z = position[2];
-
 	//Check min & max
 	if(x < rawXMin){
 		rawXMin = x;
 		//-364.348
 	}
 	if(y < rawYMin){
-		rawYMin = (z-y);
+		rawYMin = y;
 		//-631.54
 	}
 	if(x > rawXMax){
@@ -121,7 +122,7 @@ function TransformCoordinates(x,y) {
 		//217.779
 	}
 	if(y > rawYMax){
-		rawYMax = screenY;
+		rawYMax = y;
 		//59.44879999999999
 	}
 
