@@ -158,8 +158,6 @@ function RecordData(){
 		background('#222222');
 		console.log(oneFrameOfData.toString());
 	}
-
-
 }
 
 
