@@ -5,28 +5,47 @@ var rawXMin = -10; //-300
 var rawXMax = 20; //200
 var rawYMin = -10; //-400, -300
 var rawYMax = 20; //30
+var previousNumHands = 0;
+var currentNumHands = 0;
 
 //Infinite Loop to catch each frame
 Leap.loop(controllerOptions, function(frame){
 
-clear();
-	
-HandleFrame(frame);
+var oneFrameOfData = nj.zeros([5]);
+console.log(oneFrameOfData.toString());
+
+// currentNumHands = frame.hands.length;
+// console.log(currentNumHands);
+
+
+
+// clear();	
+// HandleFrame(frame);
+// RecordData();
+
+
+// previousNumHands = currentNumHands;
+// console.log(previousNumHands);
 });
 
 //Handles a single frame
 function HandleFrame(frame) {	
 	//console.log(frame.hands.length);
 	//No hand - variables undefine
-	if(frame.hands.length == 1){
-		//Grabs only one hand per frame
+	if(frame.hands.length == 1 || frame.hands.length == 2){
+		//Grabs 1st hand per frame
 		var hand = frame.hands[0];
-		HandleHand(hand);
+		HandleHand(hand,1);
+		if(frame.hands.length == 2){
+			//Grabs 2nd hand per frame
+			//var hand = frame.hands[1];
+			HandleHand(hand,2);
+		}
 	}
 }
 
 //Handles a single hand
-function HandleHand(hand) {
+function HandleHand(hand, numHand) {
 	//Grabs fingers
 	var fingers = hand.fingers;
 	//Draws all five finger bones(1-4) at a time
@@ -41,34 +60,14 @@ function HandleHand(hand) {
 			//Gets all bones of a finger
 			var bones = fingers[k].bones;
 			//Draws finger
-			HandleBone(bones[l]);
+			HandleBone(bones[l], numHand);
 		}
 		l--;
 	}
-
-	// for(var k=0; k<fingers.length; k++){
-	// 	//Gets all bones of a finger
-	// 	var bones = fingers[k].bones;
-	// 	console.log(fingers[k].type)
-	// 	console.log(bones[l].type)
-	// 	//Draws finger
-	// 	HandleBone(bones[l]);
-	// }
-
-}
-
-//Handles a single finger
-function HandleFinger(finger) {
-	//Gets all the finger's bones
-	var bones = finger.bones;
-	//Iterates over the bones in each finger
-	for (i=0; i<bones.length; i++){
-		HandleBone(finger.bones[i]);
-	}	
 }
 
 //Handles a single bone
-function HandleBone(bone){
+function HandleBone(bone, numHand){
 	//Capture the x, y, and z coordinates the tip of each bone
 	var tipPosition = bone.nextJoint;
 	//console.log(position);
@@ -89,17 +88,34 @@ function HandleBone(bone){
 
 	//Determine strokeWeight
 	if (bone.type == 0){
-		strokeWeight(4);
-		stroke(210);
+		strokeWeight(6);
+		if (numHand == 1){
+			stroke('rgb(0,210,0)');
+		} else {
+			stroke('rgb(210,0,0)');
+		}
+		
 	} else if (bone.type == 1){
-		strokeWeight(3); 
-		stroke(150);
+		strokeWeight(4); 
+		if (numHand == 1){
+			stroke('rgb(0,153,0)');
+		} else {
+			stroke('rgb(153,0,0)');
+		}
 	} else if (bone.type == 2){
 		strokeWeight(2); 
-		stroke(50);
+		if (numHand == 1){
+			stroke('rgb(0,75,0)');
+		} else {
+			stroke('rgb(75,0,0)');
+		}
 	} else {
-		strokeWeight(1); //3
-		stroke(51);
+		strokeWeight(1);
+		if (numHand == 1){
+			stroke('rgb(0,51,0)');
+		} else {
+			stroke('rgb(51,0,0)');
+		}
 	}
 	//Draw lines
 	line(newTipPosition[0], newTipPosition[1], newBasePostion[0], newBasePostion[1]);	
@@ -129,6 +145,12 @@ function TransformCoordinates(x,y) {
 	x = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin);
 	y = ((y-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin);
 	return [x,y];
+}
+
+function RecordData(){
+	if (previousNumHands == 2 && currentNumHands == 1){
+		background('#222222');
+	}
 }
 
 
