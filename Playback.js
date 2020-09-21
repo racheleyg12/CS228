@@ -1,135 +1,78 @@
-
-//Global Variables
-var controllerOptions = {};
-var rawXMin = -10; //-300
-var rawXMax = 20; //200
-var rawYMin = -10; //-400, -300
-var rawYMax = 20; //30
-
-//Infinite Loop to catch each frame
-Leap.loop(controllerOptions, function(frame){
-
-clear();
-	
-HandleFrame(frame);
-});
-
-//Handles a single frame
-function HandleFrame(frame) {	
-	//console.log(frame.hands.length);
-	//No hand - variables undefine
-	if(frame.hands.length == 1){
-		//Grabs only one hand per frame
-		var hand = frame.hands[0];
-		HandleHand(hand);
-	}
-}
-
-//Handles a single hand
-function HandleHand(hand) {
-	//Grabs fingers
-	var fingers = hand.fingers;
-	//Draws all five finger bones(1-4) at a time
-
-	//Distal phalanges are bones.type = 3
-	var l = 3;
-
-	//We know there are 4 bones in each finger
-	for (var j=0; j<4; j++){
-		//All five bones of a type at a time
-		for(var k=0; k<fingers.length; k++){
-			//Gets all bones of a finger
-			var bones = fingers[k].bones;
-			//Draws finger
-			HandleBone(bones[l]);
+var oneFrameOfData = nj.array([[[ 408.17662, 408.17662, 313.42028,  259.1716],
+        [ 437.90437, 379.89316, 343.40752, 321.39447],
+        [ 467.74166, 436.23381, 411.19253, 389.69503],
+        [ 497.20582, 492.62547, 470.33993, 447.96538],
+        [ 522.70239, 540.38705, 545.00505, 536.85765]],
+       [[ 489.25245, 489.25245, 413.12404, 350.25238],
+        [ 475.50155, 313.64937, 217.44814,  166.6357],
+        [ 465.07584, 305.34358, 193.60133, 133.44127],
+        [ 456.74527, 310.20982, 206.36195, 147.88296],
+        [ 451.61249,  316.9739, 233.79872, 191.52654]],
+       [[ 650.88012, 650.88012, 626.14632, 600.26012],
+        [    667.62, 605.48248, 556.05028, 522.03523],
+        [ 662.42639, 598.46624, 539.15999, 497.46955],
+        [ 654.58731, 593.16867, 539.02728, 498.88961],
+        [ 640.09254, 584.04004, 537.69127,  507.7882]],
+       [[ 408.17662, 313.42028,  259.1716, 226.00688],
+        [ 379.89316, 343.40752, 321.39447, 305.84697],
+        [ 436.23381, 411.19253, 389.69503, 373.07467],
+        [ 492.62547, 470.33993, 447.96538, 429.63031],
+        [ 540.38705, 545.00505, 536.85765, 523.27408]],
+       [[ 489.25245, 413.12404, 350.25238, 304.06066],
+        [ 313.64937, 217.44814,  166.6357, 134.27738],
+        [ 305.34358, 193.60133, 133.44127,  98.97278],
+        [ 310.20982, 206.36195, 147.88296, 114.08468],
+        [  316.9739, 233.79872, 191.52654, 159.57743]],
+       [[ 777.36005, 739.08096, 699.01833, 667.22977],
+        [ 707.10069, 630.59727,  577.9541, 537.59708],
+        [ 696.24206, 604.45712, 539.93518, 494.85403],
+        [  688.0433, 604.25173, 542.13292, 498.01713],
+        [ 673.91544, 602.18407, 555.90477, 513.96619]]]);
+var anotherFrameOfData = nj.array([[[  745.53268,  745.53268,   585.0204,  485.21691],
+        [  770.60172,  596.94409,  500.48481,  448.17156],
+        [  799.48212,  658.92807,  565.64783,  508.80211],
+        [  829.49267,  729.70611,  637.72531,  576.80742],
+        [  857.36647,  791.73127,  738.69692,   702.0016]],
+       [[  422.94102,  422.94102,  380.69932,  344.05414],
+        [  370.86732,   238.6538,  186.11333,  168.11503],
+        [  351.28196,  214.48902,  152.68406,  132.32481],
+        [  338.18983,  207.05729,  143.56208,   121.3627],
+        [  339.60002,  210.43043,  153.88051,    134.644]],
+       [[  726.34471,  726.34471,  695.53436,   662.6161],
+        [  714.11982,  625.14545,    565.414,  533.56936],
+        [  697.79213,  601.39094,  528.57229,  489.91256],
+        [  682.02704,   585.4072,  519.30044,  482.66754],
+        [  667.45839,  572.08413,  513.32066,  484.55926]],
+       [[  745.53268,   585.0204,  485.21691,  440.43215],
+        [  596.94409,  500.48481,  448.17156,  413.24695],
+        [  658.92807,  565.64783,  508.80211,  471.66938],
+        [  729.70611,  637.72531,  576.80742,  535.63728],
+        [  791.73127,  738.69692,   702.0016,  666.51878]],
+       [[  422.94102,  380.69932,  344.05414,  311.76727],
+        [   238.6538,  186.11333,  168.11503,  161.45227],
+        [  214.48902,  152.68406,  132.32481,   126.7332],
+        [  207.05729,  143.56208,   121.3627,  115.26255],
+        [  210.43043,  153.88051,    134.644,  126.03302]],
+       [[ 1065.74282, 1008.36177,  947.05496,  880.42687],
+        [   877.2698,  766.02624,  706.71892,  667.64893],
+        [  833.02952,   697.4124,   625.4127,  583.13073],
+        [  803.26147,  680.14455,  611.91962,  571.77897],
+        [  778.44866,  669.00784,  615.44274,  574.78048]]])
+function draw(){
+	clear();
+	//line(oneFrameOfData.get(0,0,0),oneFrameOfData.get(3,0,0),oneFrameOfData.get(1,0,0),oneFrameOfData.get(4,0,0));
+	for (var i=0; i < 5; i++) {		//5 rows
+		for (var j=0; j < 4; j++) {	//4 columns
+			var xStart = oneFrameOfData.get(0,i,j);
+			var yStart = oneFrameOfData.get(1,i,j);
+			var zStart = oneFrameOfData.get(2,i,j);
+			var xEnd = oneFrameOfData.get(3,i,j);
+			var yEnd = oneFrameOfData.get(4,i,j);
+			var zEnd = oneFrameOfData.get(5,i,j);
+			line(xStart, yStart, xEnd, yEnd);
 		}
-		l--;
 	}
 
-	// for(var k=0; k<fingers.length; k++){
-	// 	//Gets all bones of a finger
-	// 	var bones = fingers[k].bones;
-	// 	console.log(fingers[k].type)
-	// 	console.log(bones[l].type)
-	// 	//Draws finger
-	// 	HandleBone(bones[l]);
-	// }
 
+	
 }
-
-//Handles a single finger
-function HandleFinger(finger) {
-	//Gets all the finger's bones
-	var bones = finger.bones;
-	//Iterates over the bones in each finger
-	for (i=0; i<bones.length; i++){
-		HandleBone(finger.bones[i]);
-	}	
-}
-
-//Handles a single bone
-function HandleBone(bone){
-	//Capture the x, y, and z coordinates the tip of each bone
-	var tipPosition = bone.nextJoint;
-	//console.log(position);
-	var tipX = tipPosition[0];
-	var tipY = tipPosition[1];
-	var tipZ = tipPosition[2];
-
-	//Capture the x, y, and z coordinates the base of each bone
-	var basePosition = bone.prevJoint;
-	//console.log(position);
-	var baseX = basePosition[0];
-	var baseY = basePosition[1];
-	var baseZ = basePosition[2];
-
-	//Translate the bone positions into canvas positions.
-	var newTipPosition = TransformCoordinates(tipX,tipZ-tipY)
-	var newBasePostion = TransformCoordinates(baseX,baseZ-baseY)
-
-	//Determine strokeWeight
-	if (bone.type == 0){
-		strokeWeight(4);
-		stroke(210);
-	} else if (bone.type == 1){
-		strokeWeight(3); 
-		stroke(150);
-	} else if (bone.type == 2){
-		strokeWeight(2); 
-		stroke(50);
-	} else {
-		strokeWeight(1); //3
-		stroke(51);
-	}
-	//Draw lines
-	line(newTipPosition[0], newTipPosition[1], newBasePostion[0], newBasePostion[1]);	
-}
-
-//Translate the positions into canvas positions.
-//MAKE SURE Y = Z-Y
-function TransformCoordinates(x,y) {
-	//Check min & max
-	if(x < rawXMin){
-		rawXMin = x;
-		//-364.348
-	}
-	if(y < rawYMin){
-		rawYMin = y;
-		//-631.54
-	}
-	if(x > rawXMax){
-		rawXMax = x;
-		//217.779
-	}
-	if(y > rawYMax){
-		rawYMax = y;
-		//59.44879999999999
-	}
-
-	x = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin);
-	y = ((y-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin);
-	return [x,y];
-}
-
-
-

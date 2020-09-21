@@ -12,9 +12,6 @@ var oneFrameOfData = nj.zeros([6,5,4]); //6 stacks of 5x4 matrices
 
 //Infinite Loop to catch each frame
 Leap.loop(controllerOptions, function(frame){
-
-
-
 currentNumHands = frame.hands.length;
 
 clear();	
@@ -81,19 +78,17 @@ function HandleBone(bone, fingerIndex){
 	var newBasePostion = TransformCoordinates(baseX,baseZ-baseY);
 
 	//Del3 Step21 Sum all 6 coordinates together after they have been transformed
-	//var transformedXPosition = TransformCoordinates(tipX, baseX);
-	//var transformedYPosition = TransformCoordinates(tipY, baseY);
+	// var transformedXPosition = TransformCoordinates(tipX, baseX);
+	// var transformedYPosition = TransformCoordinates(tipY, baseY);
 	var transformedZPosition = TransformCoordinates(tipZ, baseZ);
 	var sum = newTipPosition[0] + newTipPosition[1] + newBasePostion[0] + newBasePostion[1] + transformedZPosition[0] + transformedZPosition[1]
 	
 	oneFrameOfData.set(0,fingerIndex, bone.type, newBasePostion[0]);
 	oneFrameOfData.set(1,fingerIndex, bone.type, newBasePostion[1]);
 	oneFrameOfData.set(2,fingerIndex, bone.type, transformedZPosition[1]);
-	
 	oneFrameOfData.set(3,fingerIndex, bone.type, newTipPosition[0]);
 	oneFrameOfData.set(4,fingerIndex, bone.type, newTipPosition[1]);
 	oneFrameOfData.set(5,fingerIndex, bone.type, transformedZPosition[0]);
-
 
 	//Determine strokeWeight
 	if (bone.type == 0){
