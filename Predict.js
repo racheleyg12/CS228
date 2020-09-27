@@ -160,15 +160,15 @@ function draw(){
     if (trainingCompleted == false){
         Train();     
     } 
-    
     Test();
+    DrawCircles();
 }
 
 function Train(){
     trainingCompleted = true;
     for (var i = 0; i < numSamples; i++) {
         if (i % 2 == 0){
-            var currentFeatures =  irisData.pick(i).slice([0,4]);
+            var currentFeatures =  irisData.pick(i).slice([0,2]);
             var currentLabel =  irisData.pick(i).get(4);
             //console.log(i + ": " + irisData.pick(i) + " " + currentFeatures.toString() + " " + currentLabel);
             knnClassifier.addExample(currentFeatures.tolist(),currentLabel);
@@ -180,6 +180,8 @@ function Test(){
    
     //if (testingSampleIndex % 2 != 0){
         var currentFeatures =  irisData.pick(testingSampleIndex).slice([0,4]);
+        var currentFeatures =  irisData.pick(testingSampleIndex).slice([0,2]);
+        //console.log(currentFeatures.toString())
         var currentLabel =  irisData.pick(testingSampleIndex).get(4);
         var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
         knnClassifier.classify(currentFeatures.tolist(),GotResults);
@@ -189,12 +191,44 @@ function Test(){
 }
 
 function GotResults(err, result){
-    console.log(result.label);
-
-    console.log(testingSampleIndex);
+    //console.log(result.label);
+    //console.log(testingSampleIndex);
     testingSampleIndex += 2;
     if (testingSampleIndex > numSamples){
         testingSampleIndex = 1;
     }
 
+}
+
+function DrawCircles(){
+    for (var i = 0; i < numSamples; i++) { 
+       var x = irisData.pick(i).get(0);
+       var y = irisData.pick(i).get(1);
+       var c = irisData.pick(i).get(4);
+       
+       //Circle color
+       if (c == 0){
+            fill('rgb(250,0,0)');
+       } else if (c == 1){
+            fill('rgb(0,235,0)');
+       } else {
+            fill('rgb(0,0,250)');
+       }
+
+       //Outline color
+       if (i % 2 == 0){   //even = training sample
+            stroke('rgb(0,0,0)');
+       } else {           //odd = testing sample
+            if (c == 0){
+                stroke('rgb(250,0,0)');
+           } else if (c == 1){
+                stroke('rgb(0,235,0)');
+           } else {
+                stroke('rgb(0,0,250)');
+           }
+       }
+
+       circle(x*100,y*100,10)
+
+    }
 }
