@@ -1,10 +1,6 @@
 
 //Global Variables
 var controllerOptions = {};
-var rawXMin = -10; //-300
-var rawXMax = 20; //200
-var rawYMin = -10; //-400, -300
-var rawYMax = 20; //30
 var previousNumHands = 0;
 var currentNumHands = 0;
 
@@ -65,37 +61,36 @@ function HandleHand(hand, numHand, InteractionBox) {
 
 //Handles a single bone
 function HandleBone(bone, fingerIndex, InteractionBox){
-	//Capture the x, y, and z coordinates the tip of each bone
-	var tipPosition = bone.nextJoint;
-	var tipX = tipPosition[0];
-	var tipY = tipPosition[1];
-	var tipZ = tipPosition[2];
+	//Capture the X, Y, Z coordinates the TIP of each bone
+	var normalizedNextJoint = InteractionBox.normalizePoint(bone.nextJoint, true); 
+	//console.log(normalizedNextJoint.toString());
 
-	//Capture the x, y, and z coordinates the base of each bone
-	var basePosition = bone.prevJoint;
+	//Capture the X, Y, Z coordinates the BASE of each bone
 	var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true); 
-	console.log(normalizedPrevJoint);
+	//console.log(normalizedPrevJoint.toString());
 
-	var baseX = basePosition[0];
-	var baseY = basePosition[1];
-	var baseZ = basePosition[2];
+	//Saves the data to 4x5x6 from [0,1]
+	oneFrameOfData.set(0,fingerIndex, bone.type, normalizedPrevJoint[0]);
+	oneFrameOfData.set(1,fingerIndex, bone.type, normalizedPrevJoint[1]);
+	oneFrameOfData.set(2,fingerIndex, bone.type, normalizedPrevJoint[2]);
+	oneFrameOfData.set(3,fingerIndex, bone.type, normalizedNextJoint[0]);
+	oneFrameOfData.set(4,fingerIndex, bone.type, normalizedNextJoint[1]);
+	oneFrameOfData.set(5,fingerIndex, bone.type, normalizedNextJoint[2]);
 
-	//Transform the bone positions into canvas positions.
-	var newTipPosition = TransformCoordinates(tipX,tipZ-tipY);
-	var newBasePostion = TransformCoordinates(baseX,baseZ-baseY);
+	// Convert the normalized coordinates to span the canvas
+    var canvasXTip = window.innerWidth * normalizedNextJoint[0];
+    var canvasYTip = window.innerHeight * (1 - normalizedNextJoint[1]);
+    var canvasXBase = window.innerWidth * normalizedPrevJoint[0];
+    var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
 
-	//Del3 Step21 Sum all 6 coordinates together after they have been transformed
-	// var transformedXPosition = TransformCoordinates(tipX, baseX);
-	// var transformedYPosition = TransformCoordinates(tipY, baseY);
-	var transformedZPosition = TransformCoordinates(tipZ, baseZ);
-	var sum = newTipPosition[0] + newTipPosition[1] + newBasePostion[0] + newBasePostion[1] + transformedZPosition[0] + transformedZPosition[1]
-	
-	oneFrameOfData.set(0,fingerIndex, bone.type, newBasePostion[0]);
-	oneFrameOfData.set(1,fingerIndex, bone.type, newBasePostion[1]);
-	oneFrameOfData.set(2,fingerIndex, bone.type, transformedZPosition[1]);
-	oneFrameOfData.set(3,fingerIndex, bone.type, newTipPosition[0]);
-	oneFrameOfData.set(4,fingerIndex, bone.type, newTipPosition[1]);
-	oneFrameOfData.set(5,fingerIndex, bone.type, transformedZPosition[0]);
+   
+    //scales raw coordinates to span your canvas
+	oneFrameOfData.set(0,fingerIndex, bone.type, canvasXTip);
+	oneFrameOfData.set(1,fingerIndex, bone.type, canvasYTip);
+	oneFrameOfData.set(2,fingerIndex, bone.type, normalizedPrevJoint[2]);
+	oneFrameOfData.set(3,fingerIndex, bone.type, canvasXBase);
+	oneFrameOfData.set(4,fingerIndex, bone.type, canvasYBase);
+	oneFrameOfData.set(5,fingerIndex, bone.type, normalizedNextJoint[2]);
 
 	//Determine strokeWeight
 	if (bone.type == 0){
@@ -129,35 +124,7 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 		}
 	}
 	//Draw lines
-	line(newTipPosition[0], newTipPosition[1], newBasePostion[0], newBasePostion[1]);	
-
-	//we’ll store the coordinates in the vector inside this function.
-}
-
-//Translate the positions into canvas positions.
-//MAKE SURE Y = Z-Y
-function TransformCoordinates(x,y) {
-	//Check min & max
-	if(x < rawXMin){
-		rawXMin = x;
-		//-364.348
-	}
-	if(y < rawYMin){
-		rawYMin = y;
-		//-631.54
-	}
-	if(x > rawXMax){
-		rawXMax = x;
-		//217.779
-	}
-	if(y > rawYMax){
-		rawYMax = y;
-		//59.44879999999999
-	}
-
-	x = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin);
-	y = ((y-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin);
-	return [x,y];
+	line(canvasXTip, canvasYTip, canvasXBase, canvasYBase);	
 }
 
 function RecordData(){
