@@ -23,22 +23,24 @@ previousNumHands = currentNumHands;
 
 //Handles a single frame
 function HandleFrame(frame) {	
+	
+	var InteractionBox = frame.interactionBox;
 	//console.log(frame.hands.length);
 	//No hand - variables undefine
 	if(frame.hands.length == 1 || frame.hands.length == 2){
 		//Grabs 1st hand per frame
 		var hand = frame.hands[0];
-		HandleHand(hand,1);
+		HandleHand(hand,1,InteractionBox);
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
 			//var hand = frame.hands[1];
-			HandleHand(hand,2);
+			HandleHand(hand,2,InteractionBox);
 		}
 	}
 }
 
 //Handles a single hand
-function HandleHand(hand, numHand) {
+function HandleHand(hand, numHand, InteractionBox) {
 	//Grabs fingers
 	var fingers = hand.fingers;
 	//Draws all five finger bones(1-4) at a time
@@ -53,14 +55,16 @@ function HandleHand(hand, numHand) {
 			//Gets all bones of a finger
 			var bones = fingers[k].bones;
 			//Draws finger w/ finger index i --holds the value of the current finger
-			HandleBone(bones[l], k);
+
+			//!!!!!!!!!!!!!!!!
+			HandleBone(bones[l], k, InteractionBox);
 		}
 		l--;
 	}
 }
 
 //Handles a single bone
-function HandleBone(bone, fingerIndex){
+function HandleBone(bone, fingerIndex, InteractionBox){
 	//Capture the x, y, and z coordinates the tip of each bone
 	var tipPosition = bone.nextJoint;
 	var tipX = tipPosition[0];
@@ -69,6 +73,9 @@ function HandleBone(bone, fingerIndex){
 
 	//Capture the x, y, and z coordinates the base of each bone
 	var basePosition = bone.prevJoint;
+	var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true); 
+	console.log(normalizedPrevJoint);
+
 	var baseX = basePosition[0];
 	var baseY = basePosition[1];
 	var baseZ = basePosition[2];
