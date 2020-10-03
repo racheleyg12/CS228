@@ -3,8 +3,12 @@
 var controllerOptions = {};
 var previousNumHands = 0;
 var currentNumHands = 0;
+var numSamples = 2;
+var currentSample = 0;	//indicate which frame within framesOfData we’re storing coordinates in
 
-var oneFrameOfData = nj.zeros([6,5,4]); //6 stacks of 5x4 matrices
+//6 coordinates for each 4 bones for each 5 fingers - 5x4x6
+var oneFrameOfData = nj.zeros([numSamples,5,4,6]); 
+console.log(oneFrameOfData.toString())
 
 //Infinite Loop to catch each frame
 Leap.loop(controllerOptions, function(frame){
@@ -69,13 +73,13 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true); 
 	//console.log(normalizedPrevJoint.toString());
 
-	//Saves the data to 4x5x6 from [0,1]
-	oneFrameOfData.set(0,fingerIndex, bone.type, normalizedPrevJoint[0]);
-	oneFrameOfData.set(1,fingerIndex, bone.type, normalizedPrevJoint[1]);
-	oneFrameOfData.set(2,fingerIndex, bone.type, normalizedPrevJoint[2]);
-	oneFrameOfData.set(3,fingerIndex, bone.type, normalizedNextJoint[0]);
-	oneFrameOfData.set(4,fingerIndex, bone.type, normalizedNextJoint[1]);
-	oneFrameOfData.set(5,fingerIndex, bone.type, normalizedNextJoint[2]);
+	//Saves the data to 4x5x6 from [0,1] range
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 0, normalizedPrevJoint[0]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 1, normalizedPrevJoint[1]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 2, normalizedPrevJoint[2]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 3, normalizedNextJoint[0]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, normalizedNextJoint[1]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
 
 	// Convert the normalized coordinates to span the canvas
     var canvasXTip = window.innerWidth * normalizedNextJoint[0];
@@ -83,14 +87,14 @@ function HandleBone(bone, fingerIndex, InteractionBox){
     var canvasXBase = window.innerWidth * normalizedPrevJoint[0];
     var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
 
-   
     //scales raw coordinates to span your canvas
-	oneFrameOfData.set(0,fingerIndex, bone.type, canvasXTip);
-	oneFrameOfData.set(1,fingerIndex, bone.type, canvasYTip);
-	oneFrameOfData.set(2,fingerIndex, bone.type, normalizedPrevJoint[2]);
-	oneFrameOfData.set(3,fingerIndex, bone.type, canvasXBase);
-	oneFrameOfData.set(4,fingerIndex, bone.type, canvasYBase);
-	oneFrameOfData.set(5,fingerIndex, bone.type, normalizedNextJoint[2]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 0, canvasXTip);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 1, canvasYTip);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 2, normalizedPrevJoint[2]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 3, canvasXBase);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, canvasYBase);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
+
 
 	//Determine strokeWeight
 	if (bone.type == 0){
