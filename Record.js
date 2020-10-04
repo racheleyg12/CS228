@@ -1,4 +1,3 @@
-
 //Global Variables
 var controllerOptions = {};
 var previousNumHands = 0;
@@ -88,12 +87,13 @@ function HandleBone(bone, fingerIndex, InteractionBox){
     var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
 
     //scales raw coordinates to span your canvas
-	framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, canvasXTip);
-	framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, canvasYTip);
-	framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
-	framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, canvasXBase);
-	framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, canvasYBase);
-	framesOfData.set(fingerIndex, parseInt(bone.type), 6, currentSample, normalizedNextJoint[2]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, canvasXTip);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, canvasYTip);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, canvasXBase);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, canvasYBase);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 6, currentSample, normalizedNextJoint[2]);
+
 	
 	//Determine strokeWeight
 	var width = 3;
@@ -143,9 +143,9 @@ function RecordData(){
 	}
 	if (previousNumHands == 2 && currentNumHands == 1){ //
 		background('#222222');
-		
+		//console.log(framesOfData.pick(null,null,null,0).toString());
+		//console.log(framesOfData.pick(null,null,null,1).toString());
 		console.log(framesOfData.toString());
-		//console.log(framesOfData.pick(0,null,null,null).toString());
 		
 
 	}

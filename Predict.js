@@ -180,6 +180,7 @@ function Train(){
             //console.log(irisData.pick(i).slice([0,4]).tolist());
             var currentLabel =  irisData.pick(i).get(4);
             //console.log(i + ": " + irisData.pick(i) + " " + currentFeatures.toString() + " " + currentLabel);
+            //console.log(currentFeatures.tolist());
             knnClassifier.addExample(currentFeatures.tolist(),currentLabel);
         }  
     }

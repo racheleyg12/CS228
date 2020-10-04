@@ -2,16 +2,8 @@
 //kNN classifier:
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
-
-var numSamples = irisData.shape[0];    //It's bc irisData is not established yet
-var numFeatures = irisData.shape[1]-1;
 var testingSampleIndex = 1;
-var predictedClassLabels = nj.zeros(numSamples);
 
-// console.log(predictedClassLabels.toString());
-// for (var i = 0; i < numSamples; i++) {
-//     console.log(predictedClassLabels.get(i));
-// }
 
 function draw(){
 	clear();
@@ -19,35 +11,25 @@ function draw(){
         Train();     
     } 
     Test();
-    //console.log(testingSampleIndex + ": " + predictedClassLabels[testingSampleIndex]); 
-    DrawCircles();
+
 }
 
 function Train(){
     trainingCompleted = true;
-    for (var i = 0; i < numSamples; i++) {
-        if (i % 2 == 0){
-            var currentFeatures =  irisData.pick(i).slice([0,4]);
-            //console.log(irisData.pick(i).slice([0,4]).tolist());
-            var currentLabel =  irisData.pick(i).get(4);
-            //console.log(i + ": " + irisData.pick(i) + " " + currentFeatures.toString() + " " + currentLabel);
-            knnClassifier.addExample(currentFeatures.tolist(),currentLabel);
-        }  
+    //console.log(train0.toString());
+
+    for (var i = 0; i < train0.shape[3]; i++) {
+      var features = train0.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features,0);
     }
 }
 
 function Test(){
-    var currentFeatures =  irisData.pick(testingSampleIndex).slice([0,4]);
-    var currentLabel =  irisData.pick(testingSampleIndex).get(4);
-    var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
-    knnClassifier.classify(currentFeatures.tolist(),GotResults); 
+    
 }
 
 function GotResults(err, result){
-    //console.log(result);
-    //console.log(result.label);
     predictedClassLabels.set(testingSampleIndex, parseInt(result.label));
-    //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
     testingSampleIndex += 2;
     if (testingSampleIndex > numSamples){
         testingSampleIndex = 1;
