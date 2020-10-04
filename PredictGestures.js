@@ -2,8 +2,9 @@
 //kNN classifier:
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
-var testingSampleIndex = 1;
-
+var numSamples = 2;
+var testingSampleIndex = 0;
+var predictedClassLabels = nj.zeros(2);
 
 function draw(){
 	clear();
@@ -16,23 +17,35 @@ function draw(){
 
 function Train(){
     trainingCompleted = true;
-    //console.log(train0.toString());
 
     for (var i = 0; i < train0.shape[3]; i++) {
       var features = train0.pick(null,null,null,i).reshape(1,120);
-      knnClassifier.addExample(features,0);
+      knnClassifier.addExample(features.tolist(),0);
     }
 }
 
 function Test(){
-    
+  var currentFeatures =  train0.pick(null,null,null,testingSampleIndex).reshape(1,120);
+  var currentLabel =  0;
+  var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
+  knnClassifier.classify(currentFeatures.tolist(),GotResults);
+  
+  // for (var i = 0; i < train0.shape[3]; i++) {
+  //     var currentFeatures = train0.pick(null,null,null,i).reshape(1,120);
+  //     var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
+  //     knnClassifier.classify(currentFeatures.tolist(),GotResults);
+  // }
+  // var currentLabel =  train0.pick(testingSampleIndex).get(4
+
 }
 
 function GotResults(err, result){
+    console.log(testingSampleIndex + ": " + result.label);
     predictedClassLabels.set(testingSampleIndex, parseInt(result.label));
-    testingSampleIndex += 2;
-    if (testingSampleIndex > numSamples){
-        testingSampleIndex = 1;
+    //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
+    testingSampleIndex += 1;
+    if (testingSampleIndex > 1){
+        testingSampleIndex = 0;
     }
 
 }
