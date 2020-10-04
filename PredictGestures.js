@@ -17,10 +17,11 @@ function draw(){
 
 function Train(){
     trainingCompleted = true;
-
     for (var i = 0; i < train0.shape[3]; i++) {
       var features = train0.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),0);
+      features = train1.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),1);
     }
 }
 
@@ -29,14 +30,6 @@ function Test(){
   var currentLabel =  0;
   var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
   knnClassifier.classify(currentFeatures.tolist(),GotResults);
-  
-  // for (var i = 0; i < train0.shape[3]; i++) {
-  //     var currentFeatures = train0.pick(null,null,null,i).reshape(1,120);
-  //     var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
-  //     knnClassifier.classify(currentFeatures.tolist(),GotResults);
-  // }
-  // var currentLabel =  train0.pick(testingSampleIndex).get(4
-
 }
 
 function GotResults(err, result){
