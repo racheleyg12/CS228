@@ -141,10 +141,6 @@ function RecordData(){
 	}
 	if (previousNumHands == 2 && currentNumHands == 1){ //
 		background('#222222');
-		console.log(framesOfData.pick(null,null,null,0).toString());
-		console.log(framesOfData.pick(null,null,null,1).toString());
-		console.log(framesOfData.pick(null,null,null,3).toString());
-		console.log(framesOfData.pick(null,null,null,99).toString());
 		console.log(framesOfData.toString());
 		
 

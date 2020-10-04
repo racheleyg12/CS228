@@ -11,7 +11,7 @@ function draw(){
     if (trainingCompleted == false){
         Train();     
     } 
-    //Test();
+    Test();
 
 }
 
@@ -19,15 +19,15 @@ function Train(){
     trainingCompleted = true;
     for (var i = 0; i < train8.shape[3]; i++) {
       var features = train8.pick(null,null,null,i).reshape(1,120);
-      knnClassifier.addExample(features.tolist(),0);
+      knnClassifier.addExample(features.tolist(),8);
       features = train9.pick(null,null,null,i).reshape(1,120);
-      knnClassifier.addExample(features.tolist(),1);
+      knnClassifier.addExample(features.tolist(),9);
     }
 }
 
 function Test(){
-  var currentFeatures =  train0.pick(null,null,null,testingSampleIndex).reshape(1,120);
-  var currentLabel =  0;
+  var currentFeatures =  test.pick(null,null,null,testingSampleIndex).reshape(1,120);
+  var currentLabel =  8;
   var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
   knnClassifier.classify(currentFeatures.tolist(),GotResults);
 }
@@ -37,9 +37,10 @@ function GotResults(err, result){
     predictedClassLabels.set(testingSampleIndex, parseInt(result.label));
     //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
     testingSampleIndex += 1;
-    if (testingSampleIndex > 1){
+    if (testingSampleIndex > 99){
         testingSampleIndex = 0;
     }
+    
 
 }
 
