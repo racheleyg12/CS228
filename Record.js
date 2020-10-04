@@ -5,10 +5,10 @@ var previousNumHands = 0;
 var currentNumHands = 0;
 var numSamples = 2;
 var currentSample = 0;	//indicate which frame within framesOfData we’re storing coordinates in
+nj.config.printThreshold = 1000;
 
-//6 coordinates for each 4 bones for each 5 fingers - 5x4x6
-var oneFrameOfData = nj.zeros([numSamples,5,4,6]); 
-console.log(oneFrameOfData.toString())
+//6 coordinates for each 4 bones for each 5 fingers - 5x4x6 x 2
+var framesOfData = nj.zeros([5,4,6,numSamples]); 
 
 //Infinite Loop to catch each frame
 Leap.loop(controllerOptions, function(frame){
@@ -73,13 +73,13 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true); 
 	//console.log(normalizedPrevJoint.toString());
 
-	//Saves the data to 4x5x6 from [0,1] range
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 0, normalizedPrevJoint[0]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 1, normalizedPrevJoint[1]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 2, normalizedPrevJoint[2]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 3, normalizedNextJoint[0]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, normalizedNextJoint[1]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
+	//Saves the data to 4x5x6 from [0,1] range		//Possibly make into a for loop!!
+	framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, normalizedPrevJoint[0]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, normalizedPrevJoint[1]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 3, currentSample, normalizedNextJoint[0]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, normalizedNextJoint[1]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, normalizedNextJoint[2]);
 
 	// Convert the normalized coordinates to span the canvas
     var canvasXTip = window.innerWidth * normalizedNextJoint[0];
@@ -88,17 +88,17 @@ function HandleBone(bone, fingerIndex, InteractionBox){
     var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
 
     //scales raw coordinates to span your canvas
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 0, canvasXTip);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 1, canvasYTip);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 2, normalizedPrevJoint[2]);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 3, canvasXBase);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, canvasYBase);
-	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
-
-
+	framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, canvasXTip);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, canvasYTip);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, canvasXBase);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, canvasYBase);
+	framesOfData.set(fingerIndex, parseInt(bone.type), 6, currentSample, normalizedNextJoint[2]);
+	
 	//Determine strokeWeight
+	var width = 3;
 	if (bone.type == 0){
-		strokeWeight(6);
+		strokeWeight(6*width);
 		if (currentNumHands == 1){
 			stroke('rgb(0,210,0)');
 		} else {
@@ -106,21 +106,21 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 		}
 		
 	} else if (bone.type == 1){
-		strokeWeight(4); 
+		strokeWeight(4*width); 
 		if (currentNumHands == 1){
 			stroke('rgb(0,153,0)');
 		} else {
 			stroke('rgb(153,0,0)');
 		}
 	} else if (bone.type == 2){
-		strokeWeight(2); 
+		strokeWeight(2*width); 
 		if (currentNumHands == 1){
 			stroke('rgb(0,75,0)');
 		} else {
 			stroke('rgb(75,0,0)');
 		}
 	} else {
-		strokeWeight(1);
+		strokeWeight(1*width);
 		if (currentNumHands == 1){
 			stroke('rgb(0,51,0)');
 		} else {
@@ -132,9 +132,22 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 }
 
 function RecordData(){
-	if (previousNumHands == 2 && currentNumHands == 1){
+
+	if (currentNumHands == 2){
+		//console.log(currentSample);
+		if (currentSample != numSamples){
+			currentSample++;
+		} else { // if currentSample == numSamples
+			currentSample = 0;
+		}
+	}
+	if (previousNumHands == 2 && currentNumHands == 1){ //
 		background('#222222');
-		console.log(oneFrameOfData.toString());
+		
+		console.log(framesOfData.toString());
+		//console.log(framesOfData.pick(0,null,null,null).toString());
+		
+
 	}
 }
 
