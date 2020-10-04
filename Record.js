@@ -2,7 +2,7 @@
 var controllerOptions = {};
 var previousNumHands = 0;
 var currentNumHands = 0;
-var numSamples = 2;
+var numSamples = 100;
 var currentSample = 0;	//indicate which frame within framesOfData we’re storing coordinates in
 nj.config.printThreshold = 1000;
 
@@ -22,9 +22,7 @@ previousNumHands = currentNumHands;
 
 //Handles a single frame
 function HandleFrame(frame) {	
-	
 	var InteractionBox = frame.interactionBox;
-	//console.log(frame.hands.length);
 	//No hand - variables undefine
 	if(frame.hands.length == 1 || frame.hands.length == 2){
 		//Grabs 1st hand per frame
@@ -143,8 +141,10 @@ function RecordData(){
 	}
 	if (previousNumHands == 2 && currentNumHands == 1){ //
 		background('#222222');
-		//console.log(framesOfData.pick(null,null,null,0).toString());
-		//console.log(framesOfData.pick(null,null,null,1).toString());
+		console.log(framesOfData.pick(null,null,null,0).toString());
+		console.log(framesOfData.pick(null,null,null,1).toString());
+		console.log(framesOfData.pick(null,null,null,3).toString());
+		console.log(framesOfData.pick(null,null,null,99).toString());
 		console.log(framesOfData.toString());
 		
 

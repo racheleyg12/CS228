@@ -11,16 +11,16 @@ function draw(){
     if (trainingCompleted == false){
         Train();     
     } 
-    Test();
+    //Test();
 
 }
 
 function Train(){
     trainingCompleted = true;
-    for (var i = 0; i < train0.shape[3]; i++) {
-      var features = train0.pick(null,null,null,i).reshape(1,120);
+    for (var i = 0; i < train8.shape[3]; i++) {
+      var features = train8.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),0);
-      features = train1.pick(null,null,null,i).reshape(1,120);
+      features = train9.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
     }
 }
