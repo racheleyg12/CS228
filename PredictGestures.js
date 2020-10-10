@@ -6,6 +6,8 @@ var trainingCompleted = false;
 var numSamples = 2;
 var testingSampleIndex = 0;
 var predictedClassLabels = nj.zeros(2);
+//6 coords(two sets of x,y,z for top & bottom) for each 4 bones for each 5 fingers - 5x4x6
+var oneFrameOfData = nj.zeros([5,4,6]); 
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -13,6 +15,7 @@ Leap.loop(controllerOptions, function(frame){
         Train();     
     }
     HandleFrame(frame); 
+    console.log(oneFrameOfData.toString())
     Test();
 
 });
@@ -139,12 +142,12 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	//console.log(normalizedPrevJoint.toString());
 
 	//Saves the data to 4x5x6 from [0,1] range		//Possibly make into a for loop!!
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, normalizedPrevJoint[0]);
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, normalizedPrevJoint[1]);
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 3, currentSample, normalizedNextJoint[0]);
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, normalizedNextJoint[1]);
-	// framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, normalizedNextJoint[2]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 0, normalizedPrevJoint[0]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 1, normalizedPrevJoint[1]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 2, normalizedPrevJoint[2]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 3, normalizedNextJoint[0]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, normalizedNextJoint[1]);
+	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
 
 	// Convert the normalized coordinates to span the canvas
     var canvasXTip = window.innerWidth * normalizedNextJoint[0];
