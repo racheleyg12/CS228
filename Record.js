@@ -130,7 +130,6 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 }
 
 function RecordData(){
-
 	if (currentNumHands == 2){
 		//console.log(currentSample);
 		if (currentSample != numSamples){
@@ -142,10 +141,5 @@ function RecordData(){
 	if (previousNumHands == 2 && currentNumHands == 1){ //
 		background('#222222');
 		console.log(framesOfData.toString());
-		
-
 	}
 }
-
-
-

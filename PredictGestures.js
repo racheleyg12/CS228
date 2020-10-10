@@ -1,19 +1,21 @@
 //Global Variables
-//kNN classifier:
+var controllerOptions = {};
+//kNN classifier
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
 var numSamples = 2;
 var testingSampleIndex = 0;
 var predictedClassLabels = nj.zeros(2);
 
-function draw(){
+Leap.loop(controllerOptions, function(frame){
 	clear();
     if (trainingCompleted == false){
         Train();     
-    } 
+    }
+    HandleFrame(frame); 
     Test();
 
-}
+});
 
 function Train(){
     trainingCompleted = true;
@@ -44,6 +46,7 @@ function GotResults(err, result){
 
 }
 
+//For iris data
 function DrawCircles(){
     for (var j = 0; j < numSamples; j++) { 
        //console.log(j + ": " + predictedClassLabels[j]);
@@ -74,7 +77,97 @@ function DrawCircles(){
                 stroke('rgb(0,0,250)');
            }
        }
-
        circle(x*100,y*100,10);
     }
+}
+
+//-------------------------record.js----------------------
+//Global Variables
+var previousNumHands = 0;
+var currentNumHands = 0;
+var numSamples = 100;
+var currentSample = 0;	//indicate which frame within framesOfData we’re storing coordinates in
+
+//Handles a single frame
+function HandleFrame(frame) {	
+	var InteractionBox = frame.interactionBox;
+	//No hand - variables undefine
+	if(frame.hands.length == 1 || frame.hands.length == 2){
+		//Grabs 1st hand per frame
+		var hand = frame.hands[0];
+		HandleHand(hand,1,InteractionBox);
+		if(frame.hands.length == 2){
+			//Grabs 2nd hand per frame
+			//var hand = frame.hands[1];
+			HandleHand(hand,2,InteractionBox);
+		}
+	}
+}
+
+//Handles a single hand
+function HandleHand(hand, numHand, InteractionBox) {
+	//Grabs fingers
+	var fingers = hand.fingers;
+	//Draws all five finger bones(1-4) at a time
+
+	//Distal phalanges are bones.type = 3
+	var l = 3;
+
+	//We know there are 4 bones in each finger
+	for (var j=0; j<4; j++){
+		//All five bones of a type at a time
+		for(var k=0; k<fingers.length; k++){
+			//Gets all bones of a finger
+			var bones = fingers[k].bones;
+			//Draws finger w/ finger index i --holds the value of the current finger
+
+			//!!!!!!!!!!!!!!!!
+			HandleBone(bones[l], k, InteractionBox);
+		}
+		l--;
+	}
+}
+
+//Handles a single bone
+function HandleBone(bone, fingerIndex, InteractionBox){
+	//Capture the X, Y, Z coordinates the TIP of each bone
+	var normalizedNextJoint = InteractionBox.normalizePoint(bone.nextJoint, true); 
+	//console.log(normalizedNextJoint.toString());
+
+	//Capture the X, Y, Z coordinates the BASE of each bone
+	var normalizedPrevJoint = InteractionBox.normalizePoint(bone.prevJoint, true); 
+	//console.log(normalizedPrevJoint.toString());
+
+	//Saves the data to 4x5x6 from [0,1] range		//Possibly make into a for loop!!
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 0, currentSample, normalizedPrevJoint[0]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 1, currentSample, normalizedPrevJoint[1]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 2, currentSample, normalizedPrevJoint[2]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 3, currentSample, normalizedNextJoint[0]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 4, currentSample, normalizedNextJoint[1]);
+	// framesOfData.set(fingerIndex, parseInt(bone.type), 5, currentSample, normalizedNextJoint[2]);
+
+	// Convert the normalized coordinates to span the canvas
+    var canvasXTip = window.innerWidth * normalizedNextJoint[0];
+    var canvasYTip = window.innerHeight * (1 - normalizedNextJoint[1]);
+    var canvasXBase = window.innerWidth * normalizedPrevJoint[0];
+    var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
+
+	//Determine strokeWeight
+	var width = 3;
+	if (bone.type == 0){
+		strokeWeight(6*width);
+		stroke(210);
+	} else if (bone.type == 1){
+		strokeWeight(4*width); 
+		stroke(150);
+	} else if (bone.type == 2){
+		strokeWeight(2*width); 
+		stroke(50);
+	} else {
+		strokeWeight(1*width);
+		stroke(51);
+	}
+	
+	//Draw lines
+	line(canvasXTip, canvasYTip, canvasXBase, canvasYBase);	
 }
