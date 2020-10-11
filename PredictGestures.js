@@ -32,10 +32,9 @@ function Train(){
     }
 }
 
-function Test(){
+function Test(){	
 	CenterData();
-	CenterYData();
- 	var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
+	var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
  	var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
  	knnClassifier.classify(currentFeatures.tolist(),GotResults);
 }
@@ -47,7 +46,7 @@ function GotResults(err, result){
 
     numPrediction += 1;
     meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitTested))/numPrediction;
-    //console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
+    console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
 
 }
 
@@ -60,6 +59,7 @@ function HandleFrame(frame) {
 		var hand = frame.hands[0];
 		HandleHand(hand,1,InteractionBox);
 		//console.log(oneFrameOfData.toString());
+		//CenterData();
 		Test();
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
@@ -144,7 +144,7 @@ function CenterData(){
 	var xValues = oneFrameOfData.slice([],[],[0,6,3]);
 	var currentMean = xValues.mean();
 	var horizontalShift = 0.5 - currentMean;
-	//console.log("x " + currentMeanX);
+	//console.log("x " + currentMean);
 
 	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
 	currentMean = yValues.mean();
@@ -153,7 +153,7 @@ function CenterData(){
 	
 	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
 	currentMean = zValues.mean();
-	var zShift = 0.5 - currentMean;
+	var zShift = 1.0 - currentMean;
 	//console.log("z " + currentMean);
 
 	//Shifts all coords
@@ -183,44 +183,12 @@ function CenterData(){
 			shiftedY = currentY + verticalShift;
 			oneFrameOfData.set(f,b,5, shiftedY);
 
-			//Shifts all z coords
-			// currentZ = oneFrameOfData.get(f,b,2);
-			// var shiftedZ = currentY + verticalShift;
-			// oneFrameOfData.set(f,b,0, shiftedY);
-			// currentZ = oneFrameOfData.get(f,b,5);
-			// shiftedY = currentY + verticalShift;
-			// oneFrameOfData.set(f,b,0, shiftedY);
-
 		}
 	}
+	//currentMean = xValues.mean();
+	//console.log(currentMean);
+	//currentMean = yValues.mean();
+	//console.log(currentMean);
 	//currentMean = zValues.mean();
 	//console.log(currentMean);
-}
-
-function CenterYData(){
-	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-	//console.log(yValues.shape);
-	var currentMeanY = yValues.mean();
-	var verticalShift = 0.5 - currentMeanY;
-	//console.log("y " + currentMeanY);
-
-	//Shifts all coords
-	for (var f = 0; f < 5; f++) {
-		for (var b = 0; b < 4; b++) {
-			//Shifts all y coords
-			currentY = oneFrameOfData.get(f,b,1);
-			//console.log("currentY " + currentY);
-			shiftedY = currentY + verticalShift;
-			//console.log("shiftedY " + shiftedY);
-			oneFrameOfData.set(f,b,1, shiftedY);
-			currentY = oneFrameOfData.get(f,b,4);
-			shiftedY = currentY + verticalShift;
-			oneFrameOfData.set(f,b,4, shiftedY);
-
-		}
-	}
-	//currentMean = yValues.mean();
-	//currentMean = zValues.mean();
-	//console.log("y " + currentMean);
-
 }
