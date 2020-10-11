@@ -8,6 +8,9 @@ var trainingCompleted = false;
 var predictedClassLabels = nj.zeros(2);
 //6 coords(two sets of x,y,z for top & bottom) for each 4 bones for each 5 fingers - 5x4x6
 var oneFrameOfData = nj.zeros([5,4,6]); 
+var numPrediction = 0;
+var meanPredictionAccuracy = 0;
+var digitTested = 8;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -36,14 +39,13 @@ function Test(){
 }
 
 function GotResults(err, result){
-    console.log(result.label);
+	var currentPrediction = result.label;
+    //console.log(currentPrediction);
     predictedClassLabels.set(parseInt(result.label));
-    
-    //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
-    // testingSampleIndex += 1;
-    // if (testingSampleIndex > 99){
-    //     testingSampleIndex = 0;
-    // }
+
+    numPrediction += 1;
+    meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitTested))/numPrediction;
+    console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
 
 }
 
