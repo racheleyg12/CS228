@@ -3,8 +3,8 @@ var controllerOptions = {};
 //kNN classifier
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
-var numSamples = 2;
-var testingSampleIndex = 0;
+//var numSamples = 2;
+//var testingSampleIndex = 0;
 var predictedClassLabels = nj.zeros(2);
 //6 coords(two sets of x,y,z for top & bottom) for each 4 bones for each 5 fingers - 5x4x6
 var oneFrameOfData = nj.zeros([5,4,6]); 
@@ -15,9 +15,6 @@ Leap.loop(controllerOptions, function(frame){
         Train();     
     }
     HandleFrame(frame); 
-    console.log(oneFrameOfData.toString())
-    Test();
-
 });
 
 function Train(){
@@ -25,71 +22,30 @@ function Train(){
     for (var i = 0; i < train8.shape[3]; i++) {
       var features = train8.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),8);
+      //console.log(i + " " + features + " " + 8);
       features = train9.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
+      //console.log(i + " " + features + " " + 9);
     }
 }
 
 function Test(){
-  var currentFeatures =  test.pick(null,null,null,testingSampleIndex).reshape(1,120);
-  var currentLabel =  8;
+  var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
   var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
   knnClassifier.classify(currentFeatures.tolist(),GotResults);
 }
 
 function GotResults(err, result){
-    console.log(testingSampleIndex + ": " + result.label);
-    predictedClassLabels.set(testingSampleIndex, parseInt(result.label));
-    //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
-    testingSampleIndex += 1;
-    if (testingSampleIndex > 99){
-        testingSampleIndex = 0;
-    }
+    console.log(result.label);
+    predictedClassLabels.set(parseInt(result.label));
     
+    //console.log(testingSampleIndex + ": " + predictedClassLabels.get(testingSampleIndex));
+    // testingSampleIndex += 1;
+    // if (testingSampleIndex > 99){
+    //     testingSampleIndex = 0;
+    // }
 
 }
-
-//For iris data
-function DrawCircles(){
-    for (var j = 0; j < numSamples; j++) { 
-       //console.log(j + ": " + predictedClassLabels[j]);
-       var x = irisData.pick(j).get(0);
-       var y = irisData.pick(j).get(1);
-       var c = irisData.pick(j).get(4);
-       
-       //Circle color
-       if (c == 0){
-            fill('rgb(250,0,0)');
-       } else if (c == 1){
-            fill('rgb(0,235,0)');
-       } else {
-            fill('rgb(0,0,250)');
-       }
-
-       //console.log(j + " " + predictedClassLabels.get(j));
-       //Outline color
-       if (j % 2 == 0){                     //even = training sample
-            stroke('rgb(0,0,0)');
-       } else {              //odd = testing sample/prediction
-            console.log(j + ": " + predictedClassLabels.get(j));
-            if (predictedClassLabels.get(j) == 0){
-                stroke('rgb(250,0,0)');
-           } else if (predictedClassLabels.get(j) == 1){
-                stroke('rgb(0,235,0)');
-           } else {	//(predictedClassLabels.get(j) == 2)
-                stroke('rgb(0,0,250)');
-           }
-       }
-       circle(x*100,y*100,10);
-    }
-}
-
-//-------------------------record.js----------------------
-//Global Variables
-var previousNumHands = 0;
-var currentNumHands = 0;
-var numSamples = 100;
-var currentSample = 0;	//indicate which frame within framesOfData we’re storing coordinates in
 
 //Handles a single frame
 function HandleFrame(frame) {	
@@ -99,6 +55,8 @@ function HandleFrame(frame) {
 		//Grabs 1st hand per frame
 		var hand = frame.hands[0];
 		HandleHand(hand,1,InteractionBox);
+		//console.log(oneFrameOfData.toString());
+		Test();
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
 			//var hand = frame.hands[1];
