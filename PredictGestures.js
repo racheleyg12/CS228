@@ -4,13 +4,13 @@ var controllerOptions = {};
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
 //var numSamples = 2;
-//var testingSampleIndex = 0;
+var testingSampleIndex = 0;
 var predictedClassLabels = nj.zeros(2);
 //6 coords(two sets of x,y,z for top & bottom) for each 4 bones for each 5 fingers - 5x4x6
 var oneFrameOfData = nj.zeros([5,4,6]); 
 var numPrediction = 0;
 var meanPredictionAccuracy = 0;
-var digitTested = 8;
+var digitTested = 7;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -25,15 +25,45 @@ function Train(){
     for (var i = 0; i < train8.shape[3]; i++) {
       var features = train8.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),8);
-      //console.log(i + " " + features + " " + 8);
+      //You really need to bend your hand for the leap motion device to register as an 8 
+      console.log(i + " " + features + " " + 8);
       features = train9.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
-      //console.log(i + " " + features + " " + 9);
+      console.log(i + " " + features + " " + 9);
+      features = train0.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),0);
+      //console.log(i + " " + features + " " + 0);
+      //hold hand above
+      features = train1.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),1);
+      //console.log(i + " " + features + " " + 1);
+      //hold hand directly above / medium distance away
+      features = train2.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),2);
+      //console.log(i + " " + features + " " + 2);
+      features = train3.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),3);
+      //console.log(i + " " + features + " " + 3);
+      features = train4.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),4);
+      //console.log(i + " " + features + " " + 4);
+      features = train5.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),5);
+      //Have to flatten hand
+      //console.log(i + " " + features + " " + 5);
+      features = train6.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),6);
+      //Have to flatten hand right above 
+      //console.log(i + " " + features + " " + 6);
+      features = train7.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),7);
+      //Have to straighten hand toward / medium distance away
+      console.log(i + " " + features + " " + 7);
     }
 }
 
 function Test(){	
-	CenterData();
+	//CenterData();
 	var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
  	var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
  	knnClassifier.classify(currentFeatures.tolist(),GotResults);
@@ -41,7 +71,7 @@ function Test(){
 
 function GotResults(err, result){
 	var currentPrediction = result.label;
-    //console.log(currentPrediction);
+    console.log(currentPrediction);
     predictedClassLabels.set(parseInt(result.label));
 
     numPrediction += 1;
