@@ -13,13 +13,43 @@ var meanPredictionAccuracy = 0;
 //What is being changed
 var digitTested = 8;
 
+var programState = 0;
+
 Leap.loop(controllerOptions, function(frame){
 	clear();
     // if (trainingCompleted == false){
+    //     TrainKNNIfNotDoneYet()
     //     Train();     
     // }
-    HandleFrame(frame); 
+    //HandleFrame(frame); 
+	DetermineState(frame);
+	if (programState==0) {
+		HandleState0(frame);
+ 	} else if (programState==1) {
+		HandleState1(frame);
+ 	}
 });
+
+function DetermineState(frame){
+	if(frame.hands.length == 1 || frame.hands.length == 2){
+		programState = 1;
+	} else {
+		programState = 0; //No hands over the device
+	}
+}
+
+function HandleState0(frame) {
+	//TrainKNNIfNotDoneYet()
+	DrawImageToHelpUserPutTheirHandOverTheDevice()
+}
+
+function HandleState1(frame){
+	HandleFrame(frame); 
+}
+
+function DrawImageToHelpUserPutTheirHandOverTheDevice(){
+	image(img, 0, 0)
+}
 
 function Train(){
     trainingCompleted = true;
@@ -121,7 +151,6 @@ function HandleFrame(frame) {
 		//Grabs 1st hand per frame
 		var hand = frame.hands[0];
 		HandleHand(hand,1,InteractionBox);
-		//console.log(oneFrameOfData.toString());
 		//Test();
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
@@ -247,11 +276,4 @@ function CenterData(){
 
 		}
 	}
-	// xValues = oneFrameOfData.slice([],[],[0,6,3]);
-	// currentMean = xValues.mean();
-	// console.log(currentMean);
-	//currentMean = yValues.mean();
-	//console.log(currentMean);
-	//currentMean = zValues.mean();
-	//console.log(currentMean);
 }
