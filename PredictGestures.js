@@ -27,16 +27,45 @@ Leap.loop(controllerOptions, function(frame){
 		HandleState0(frame);
  	} else if (programState==1) {
 		HandleState1(frame);
+ 	} else {
+ 		HandleState2(frame);
  	}
 });
 
 function DetermineState(frame){
-	if(frame.hands.length == 1 || frame.hands.length == 2){
-		programState = 1;
+	if(frame.hands.length == 0){
+		programState = 0;	//No hand(s) present
+	} else if (HandIsUncentered()) {
+		programState = 1;	//Hand uncentered
 	} else {
-		programState = 0; //No hands over the device
+		programState = 2; 	//Else
 	}
 }
+
+function HandIsUncentered(){
+	if(HandIsTooFarToTheLeft()){
+		return true
+	}
+	return false;
+}
+function HandIsTooFarToTheLeft(){
+	var currentMeanX = CenterDataX();
+	if (currentMeanX < 0.25){
+		console.log("true");
+		return true;
+	} else {
+		return false;
+		console.log("umm what?");
+	}
+}
+function HandIsTooFarToTheRight(){
+	if (CenterDataX() > 0.75){
+		return true;
+	}
+	return false;
+}
+
+
 
 function HandleState0(frame) {
 	//TrainKNNIfNotDoneYet()
@@ -45,10 +74,19 @@ function HandleState0(frame) {
 
 function HandleState1(frame){
 	HandleFrame(frame); 
+	if (HandIsTooFarToTheLeft()){
+		DrawArrowRight();
+	}
+}
+function HandleState2(frame){
+	HandleFrame(frame); 
 }
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
-	image(img, 0, 0)
+	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowRight(){
+	image(imgHandRight, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
 }
 
 function Train(){
@@ -202,6 +240,9 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 4, normalizedNextJoint[1]);
 	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
 
+	//?
+	//CenterData()
+
 	// Convert the normalized coordinates to span the canvas
     var canvasXTip = window.innerWidth/2 * normalizedNextJoint[0];
     var canvasYTip = window.innerHeight/2 * (1 - normalizedNextJoint[1]);
@@ -231,49 +272,66 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 //Does not matter where over the device a user signs a digit.
 //Center each frame of training data
 function CenterData(){
+	CenterDataX();
+	CenterDataY();
+	CenterDataZ();
+
+}
+function CenterDataX(){
 	//Find mean
-	var xValues = oneFrameOfData.slice([],[],[0,6,3]);
-	var currentMean = xValues.mean();
+	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	//All 40 x-coor
+	//console.log(xValues.toString());
+	var currentMean = xValues.mean();					//Mean of all 40
 	var horizontalShift = 0.5 - currentMean;
-	//console.log("x " + currentMean);
-
-	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-	currentMean = yValues.mean();
-	var verticalShift = 0.5 - currentMean;
-	//console.log("y " + currentMean);
-	
-	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
-	currentMean = zValues.mean();
-	var zShift = 0.5 - currentMean;
-	//console.log("z " + currentMean);
-
-	//Shifts all coords
+	//Shifts all x coords
 	for (var f = 0; f < 5; f++) {
 		for (var b = 0; b < 4; b++) {
-			//Shifts all x coords
 			var currentX = oneFrameOfData.get(f,b,0);
 			var shiftedX = currentX + horizontalShift;
 			oneFrameOfData.set(f,b,0, shiftedX);
 			currentX = oneFrameOfData.get(f,b,3);
 			shiftedX = currentX + horizontalShift;
 			oneFrameOfData.set(f,b,3, shiftedX);
-
-			//Shifts all y coords
+		}
+	}
+	//console.log(oneFrameOfData.slice([],[],[0,6,3]).toString());
+	return currentMean;
+}
+function CenterDataY(){
+	//Find mean
+	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+	currentMean = yValues.mean();
+	var verticalShift = 0.5 - currentMean;
+	//console.log("y " + currentMean);
+	//Shifts all Y coords
+	for (var f = 0; f < 5; f++) {
+		for (var b = 0; b < 4; b++) {
 			var currentY = oneFrameOfData.get(f,b,1);
 			var shiftedY = currentY + verticalShift;
 			oneFrameOfData.set(f,b,1, shiftedY);
 			currentY = oneFrameOfData.get(f,b,4);
 			shiftedY = currentY + verticalShift;
 			oneFrameOfData.set(f,b,4, shiftedY);
-
-			//Shifts all z coords
+		}
+	}
+	return currentMean;
+}
+function CenterDataZ(){
+	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+	currentMean = zValues.mean();
+	var zShift = 0.5 - currentMean;
+	//console.log("z " + currentMean);
+	//Shifts all Z coords
+	for (var f = 0; f < 5; f++) {
+		for (var b = 0; b < 4; b++) {
 			var currentZ = oneFrameOfData.get(f,b,2);
 			var shiftedZ = currentZ + zShift;
 			oneFrameOfData.set(f,b,2, shiftedZ);
 			currentZ = oneFrameOfData.get(f,b,5);
 			shiftedZ = currentZ + zShift;
 			oneFrameOfData.set(f,b,5, shiftedZ);
-
 		}
 	}
+	return currentMean;
 }
+
