@@ -14,6 +14,6 @@ function setup() {
 	imgHandLeft = loadImage('https://i.imgur.com/RjgAphu.png');
 	imgHandDown = loadImage('https://i.imgur.com/iNa10zo.png');
 	imgHandUp = loadImage('https://i.imgur.com/NbJj2S8.png');
-	imgHandForward = loadImage('https://i.imgur.com/LRYyfP6.png');
-	imgHandAway = loadImage('https://i.imgur.com/gGNNbb9.png');
+	imgHandToward = loadImage('https://i.imgur.com/IIcWBZy.png');
+	imgHandAway = loadImage('https://i.imgur.com/LJxSQA6.png');
 }

@@ -21,7 +21,6 @@ Leap.loop(controllerOptions, function(frame){
     //     TrainKNNIfNotDoneYet()
     //     Train();     
     // }
-    //HandleFrame(frame); 
 	DetermineState(frame);
 	if (programState==0) {
 		HandleState0(frame);
@@ -43,28 +42,65 @@ function DetermineState(frame){
 }
 
 function HandIsUncentered(){
-	if(HandIsTooFarToTheLeft()){
-		return true
+	if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToTheUp() || HandIsTooFarToTheDown() || HandIsTooFarAway() || HandIsTooFarToward()){
+		return true;
 	}
 	return false;
 }
 function HandIsTooFarToTheLeft(){
-	var currentMeanX = CenterDataX();
-	if (currentMeanX < 0.25){
-		console.log("true");
+	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	//All 40 x-coor
+	var currentMean = xValues.mean();					//The avg of all 40
+	if (currentMean < 0.25){
 		return true;
 	} else {
 		return false;
-		console.log("umm what?");
 	}
 }
 function HandIsTooFarToTheRight(){
-	if (CenterDataX() > 0.75){
+	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	
+	var currentMean = xValues.mean();
+	if (currentMean > 0.75){
 		return true;
+	} else {
+		return false;
 	}
-	return false;
 }
-
+function HandIsTooFarToTheDown(){
+	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+	var currentMeanY = yValues.mean();
+	if (currentMeanY < 0.25){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToTheUp(){
+	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+	var currentMeanY = yValues.mean();
+	if (currentMeanY > 0.75){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarAway(){
+	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+	currentMeanZ = zValues.mean();
+	if (currentMeanZ < 0.25){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToward(){
+	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+	currentMeanZ = zValues.mean();
+	if (currentMeanZ > 0.75){
+		return true;
+	} else {
+		return false;
+	}
+}
 
 
 function HandleState0(frame) {
@@ -77,6 +113,21 @@ function HandleState1(frame){
 	if (HandIsTooFarToTheLeft()){
 		DrawArrowRight();
 	}
+	else if (HandIsTooFarToTheRight()){
+		DrawArrowLeft();
+	}
+	else if (HandIsTooFarToTheUp()){
+		DrawArrowDown();
+	}
+	else if (HandIsTooFarToTheDown()){
+		DrawArrowUp();
+	}
+	else if (HandIsTooFarAway()){
+		DrawArrowToward();
+	}
+	else if (HandIsTooFarToward()){
+		DrawArrowAway();
+	}
 }
 function HandleState2(frame){
 	HandleFrame(frame); 
@@ -87,6 +138,21 @@ function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 }
 function DrawArrowRight(){
 	image(imgHandRight, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowLeft(){
+	image(imgHandLeft, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowDown(){
+	image(imgHandDown, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowUp(){
+	image(imgHandUp, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowToward(){
+	image(imgHandToward, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowAway(){
+	image(imgHandAway, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
 }
 
 function Train(){
@@ -275,7 +341,6 @@ function CenterData(){
 	CenterDataX();
 	CenterDataY();
 	CenterDataZ();
-
 }
 function CenterDataX(){
 	//Find mean
@@ -294,14 +359,12 @@ function CenterDataX(){
 			oneFrameOfData.set(f,b,3, shiftedX);
 		}
 	}
-	//console.log(oneFrameOfData.slice([],[],[0,6,3]).toString());
-	return currentMean;
 }
 function CenterDataY(){
 	//Find mean
 	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-	currentMean = yValues.mean();
-	var verticalShift = 0.5 - currentMean;
+	var currentMeanY = yValues.mean();
+	var verticalShift = 0.5 - currentMeanY;
 	//console.log("y " + currentMean);
 	//Shifts all Y coords
 	for (var f = 0; f < 5; f++) {
@@ -314,7 +377,6 @@ function CenterDataY(){
 			oneFrameOfData.set(f,b,4, shiftedY);
 		}
 	}
-	return currentMean;
 }
 function CenterDataZ(){
 	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
@@ -332,6 +394,5 @@ function CenterDataZ(){
 			oneFrameOfData.set(f,b,5, shiftedZ);
 		}
 	}
-	return currentMean;
 }
 
