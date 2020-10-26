@@ -10,15 +10,14 @@ var predictedClassLabels = nj.zeros(2);
 var oneFrameOfData = nj.zeros([5,4,6]); 
 var numPrediction = 0;
 var meanPredictionAccuracy = 0;
-
 //What is being changed
 var digitTested = 8;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
-    if (trainingCompleted == false){
-        Train();     
-    }
+    // if (trainingCompleted == false){
+    //     Train();     
+    // }
     HandleFrame(frame); 
 });
 
@@ -123,8 +122,7 @@ function HandleFrame(frame) {
 		var hand = frame.hands[0];
 		HandleHand(hand,1,InteractionBox);
 		//console.log(oneFrameOfData.toString());
-		//CenterData();
-		Test();
+		//Test();
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
 			//var hand = frame.hands[1];
@@ -176,10 +174,10 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	oneFrameOfData.set(fingerIndex, parseInt(bone.type), 5, normalizedNextJoint[2]);
 
 	// Convert the normalized coordinates to span the canvas
-    var canvasXTip = window.innerWidth * normalizedNextJoint[0];
-    var canvasYTip = window.innerHeight * (1 - normalizedNextJoint[1]);
-    var canvasXBase = window.innerWidth * normalizedPrevJoint[0];
-    var canvasYBase = window.innerHeight * (1 - normalizedPrevJoint[1]);
+    var canvasXTip = window.innerWidth/2 * normalizedNextJoint[0];
+    var canvasYTip = window.innerHeight/2 * (1 - normalizedNextJoint[1]);
+    var canvasXBase = window.innerWidth/2 * normalizedPrevJoint[0];
+    var canvasYBase = window.innerHeight/2 * (1 - normalizedPrevJoint[1]);
 
 	//Determine strokeWeight
 	var width = 3;
