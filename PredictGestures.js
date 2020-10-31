@@ -12,7 +12,6 @@ var numPrediction = 0;
 var meanPredictionAccuracy = 0;
 //What is being changed
 var digitTested = 8;
-
 var programState = 0;
 
 Leap.loop(controllerOptions, function(frame){
@@ -160,54 +159,54 @@ function Train(){
     for (var i = 0; i < train8.shape[3]; i++) {
       var features = train0.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),0);
-      console.log(i + " " + features + " " + 0);
+      //console.log(i + " " + features + " " + 0);
 
       //For digit 1 INDEX FINGER TO THE LEFT/SLANTED UP
       features = train1.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
-      console.log(i + " " + features + " " + 1);
+      //console.log(i + " " + features + " " + 1);
       features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
-      console.log(i + " " + features + " " + 1);
+      //console.log(i + " " + features + " " + 1);
       
       //For digit 2 have to FLATTEN hand right above 
       features = train2.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),2);
-      console.log(i + " " + features + " " + 2);
+      //console.log(i + " " + features + " " + 2);
       features = train2Neff.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),2);
-      console.log(i + " " + features + " " + 2);
+      //console.log(i + " " + features + " " + 2);
 
       //For digit 3 have to FLATTEN hand right above 
       features = train3.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),3);
-      console.log(i + " " + features + " " + 3);
+      //console.log(i + " " + features + " " + 3);
 
       //Digit 4 is amazing, hand can be anywhere (go up)
       features = train4.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),4);
-      console.log(i + " " + features + " " + 4);
+      //console.log(i + " " + features + " " + 4);
 
       //Digit 5 have to FLATTEN hand directly above 
       features = train5.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),5);
-      console.log(i + " " + features + " " + 5);
+      //console.log(i + " " + features + " " + 5);
 
       //Digit 6 have to FLATTEN hand directly above (go down)
       features = train6.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),6);
-      console.log(i + " " + features + " " + 6);
+      //console.log(i + " " + features + " " + 6);
       features = train6Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),6);
-      console.log(i + " " + features + " " + 6);
+      //console.log(i + " " + features + " " + 6);
 
       //Digit 7 have to STRAITHEN hand directly above - BACK UP
       features = train7.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),7);
-      console.log(i + " " + features + " " + 7);
+      //console.log(i + " " + features + " " + 7);
       features = train7Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),7);
-      console.log(i + " " + features + " " + 7);
+      //console.log(i + " " + features + " " + 7);
 
       //Digit 8 have to FLATTEN hand directly above - MID HEIGHT
       // features = train8.pick(null,null,null,i).reshape(1,120);
@@ -215,15 +214,15 @@ function Train(){
       // console.log(i + " " + features + " " + 8);
       features = train8Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),8);
-      console.log(i + " " + features + " " + 8);
+      //console.log(i + " " + features + " " + 8);
 
       //Digit 9 have to SLANT/ANGLR hand directly above
       features = train9.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
-      console.log(i + " " + features + " " + 9);
+      //console.log(i + " " + features + " " + 9);
       features = train9Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
-      console.log(i + " " + features + " " + 9);
+      //console.log(i + " " + features + " " + 9);
     }
    
 }
@@ -395,4 +394,12 @@ function CenterDataZ(){
 		}
 	}
 }
+
+function SignIn(){
+	var username = document.getElementById('username').value;
+	console.log(username);
+}
+
+
+
 
