@@ -396,8 +396,17 @@ function CenterDataZ(){
 }
 
 function SignIn(){
+	//Get username from html input using id
 	var username = document.getElementById('username').value;
-	console.log(username);
+	//Get an unordered list of users
+	var list = document.getElementById('users');
+	//Creating an html list item
+	var item = document.createElement('li');
+	//Have the item be the username
+	item.innerHTML = String(username);
+	list.appendChild(item);
+	console.log(list.innerHTML);
+	return false;
 }
 
 
