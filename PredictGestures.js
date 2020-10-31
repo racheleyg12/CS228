@@ -400,13 +400,25 @@ function SignIn(){
 	var username = document.getElementById('username').value;
 	//Get an unordered list of users
 	var list = document.getElementById('users');
-	//Creating an html list item
-	var item = document.createElement('li');
-	//Have the item be the username
-	item.innerHTML = String(username);
-	list.appendChild(item);
+	if(IsNewUser(username, list)){
+		//Creating an html list item
+		var item = document.createElement('li');
+		//Have the item be the username & add to list
+		item.innerHTML = String(username);
+		list.appendChild(item);
+	}
 	console.log(list.innerHTML);
 	return false;
+}
+function IsNewUser(username, list) {
+	var usernameFound = false;
+	var users = list.children;
+	for (var i = 0; i < users.length; i++) {
+		if (username == users[i].innerHTML){
+			usernameFound = true;
+		}
+	}
+	return usernameFound == false;
 }
 
 
