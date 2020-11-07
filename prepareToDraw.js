@@ -16,4 +16,7 @@ function setup() {
 	imgHandUp = loadImage('https://i.imgur.com/NbJj2S8.png');
 	imgHandToward = loadImage('https://i.imgur.com/IIcWBZy.png');
 	imgHandAway = loadImage('https://i.imgur.com/LJxSQA6.png');
+
+	imgDigit1 = loadImage('https://i.imgur.com/0ZIAgoM.png');
+	imgDigit2 = loadImage('https://i.imgur.com/isXaLpI.png');
 }
