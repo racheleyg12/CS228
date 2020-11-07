@@ -13,6 +13,7 @@ var meanPredictionAccuracy = 0;
 //What is being changed
 var digitTested = 8;
 var programState = 0;
+var digitToShow = 1;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -102,12 +103,12 @@ function HandIsTooFarToward(){
 }
 
 
-function HandleState0(frame) {
+function HandleState0(frame) {	//No hand(s)
 	//TrainKNNIfNotDoneYet()
 	DrawImageToHelpUserPutTheirHandOverTheDevice()
 }
 
-function HandleState1(frame){
+function HandleState1(frame){	//Hand(s) uncentered
 	HandleFrame(frame); 
 	if (HandIsTooFarToTheLeft()){
 		DrawArrowRight();
@@ -128,8 +129,17 @@ function HandleState1(frame){
 		DrawArrowAway();
 	}
 }
-function HandleState2(frame){
+function HandleState2(frame){	//Hand(s) centered
 	HandleFrame(frame); 
+	DrawLowerRightPanel();
+}
+
+function DrawLowerRightPanel(){
+	if (digitToShow == 1) {
+		image(imgDigit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	} else {	//Digit 2
+		image(imgDigit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	}
 }
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
