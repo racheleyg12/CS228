@@ -3,17 +3,16 @@ var controllerOptions = {};
 //kNN classifier
 const knnClassifier = ml5.KNNClassifier();
 var trainingCompleted = false;
-//var numSamples = 2;
 var testingSampleIndex = 0;
 var predictedClassLabels = nj.zeros(2);
 //6 coords(two sets of x,y,z for top & bottom) for each 4 bones for each 5 fingers - 5x4x6
 var oneFrameOfData = nj.zeros([5,4,6]); 
 var numPrediction = 0;
 var meanPredictionAccuracy = 0;
-//What is being changed
 var digitTested = 8;
 var programState = 0;
 var digitToShow = 1;
+var timeSinceLastDigitChange = new Date();
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -132,8 +131,8 @@ function HandleState1(frame){	//Hand(s) uncentered
 function HandleState2(frame){	//Hand(s) centered
 	HandleFrame(frame); 
 	DrawLowerRightPanel();
+	DetermineWhetherToSwitchDigits();
 }
-
 function DrawLowerRightPanel(){
 	if (digitToShow == 1) {
 		image(imgDigit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
@@ -141,6 +140,23 @@ function DrawLowerRightPanel(){
 		image(imgDigit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	}
 }
+function DetermineWhetherToSwitchDigits() {
+	if(TimeToSwitchDigits() == true){
+		SwitchDigits()
+	}
+	
+}
+function TimeToSwitchDigits(){
+	return false;
+}
+function SwitchDigits(){
+	if(digitToShow == 1){
+		digitToShow = 2;
+	} else {
+		digitToShow = 1;
+	}
+}
+
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
