@@ -9,7 +9,7 @@ var predictedClassLabels = nj.zeros(2);
 var oneFrameOfData = nj.zeros([5,4,6]); 
 var numPrediction = 0;
 var meanPredictionAccuracy = 0;
-var digitTested = 8;
+var digitTested = 1;
 var programState = 0;
 var digitToShow = 1;
 var timeSinceLastDigitChange = new Date();
@@ -87,12 +87,14 @@ function TimeToSwitchDigits(){
 	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
 	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
 
-	if (ElapsedInSeconds >= 5){
+	if (ElapsedInSeconds >= 7){
 		timeSinceLastDigitChange = new Date();
 		return true;
 	}
 }
 function SwitchDigits(){
+	//Reset numResults/numPrediction
+	numPrediction = 0;
 	if(digitToShow == 1){
 		digitToShow = 2;
 	} else {
@@ -186,9 +188,9 @@ function GotResults(err, result){
     predictedClassLabels.set(parseInt(result.label));
 
     numPrediction += 1;
-    meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitTested))/numPrediction;
+    meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitToShow))/numPrediction;
     //Accuracy
-    //console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
+    console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
 
 }
 
