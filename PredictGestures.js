@@ -87,7 +87,7 @@ function TimeToSwitchDigits(){
 	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
 	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
 
-	if (ElapsedInSeconds >= 7){
+	if (ElapsedInSeconds >= 8){
 		timeSinceLastDigitChange = new Date();
 		return true;
 	}
@@ -110,12 +110,19 @@ function Train(){
       console.log(i + " " + features + " " + 0);
 
       //For digit 1 INDEX FINGER TO THE LEFT/SLANTED UP
-      features = train1.pick(null,null,null,i).reshape(1,120);
+      // features = train1.pick(null,null,null,i).reshape(1,120);
+      // knnClassifier.addExample(features.tolist(),1);
+      // console.log(i + " " + features + " " + 1 + "a");
+      // features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
+      // knnClassifier.addExample(features.tolist(),1);
+      // console.log(i + " " + features + " " + 1 + "b");
+      // features = train1Bongard.pick(null,null,null,i).reshape(1,120);
+      // knnClassifier.addExample(features.tolist(),1);
+      // console.log(i + " " + features + " " + 1 + "c");
+      features = train1Goldman.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
-      console.log(i + " " + features + " " + 1);
-      features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
-      knnClassifier.addExample(features.tolist(),1);
-      console.log(i + " " + features + " " + 1);
+      console.log(i + " " + features + " " + 1 + "d");
+
       
       //For digit 2 have to FLATTEN hand right above 
       features = train2.pick(null,null,null,i).reshape(1,120);
@@ -124,6 +131,9 @@ function Train(){
       features = train2Neff.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),2);
       //console.log(i + " " + features + " " + 2);
+      features = train1Goldman.pick(null,null,null,i).reshape(1,120);
+      knnClassifier.addExample(features.tolist(),1);
+      console.log(i + " " + features + " " + 1 + "d");
 
       //For digit 3 have to FLATTEN hand right above 
       features = train3.pick(null,null,null,i).reshape(1,120);
@@ -176,7 +186,7 @@ function Train(){
 }
 
 function Test(){	
-	CenterData(); //?????
+	//CenterData(); //?????
 	var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
  	var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
  	knnClassifier.classify(currentFeatures.tolist(),GotResults);
@@ -184,7 +194,7 @@ function Test(){
 
 function GotResults(err, result){
 	var currentPrediction = result.label;
-    console.log(currentPrediction);
+    //console.log(currentPrediction);
     predictedClassLabels.set(parseInt(result.label));
 
     numPrediction += 1;
@@ -264,18 +274,25 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 
 	//Determine strokeWeight
 	var width = 3;
+	
 	if (bone.type == 0){
 		strokeWeight(6*width);
-		stroke(210);
+		stroke(230*(1-meanPredictionAccuracy), 210*meanPredictionAccuracy, 0);
+		//stroke(210);
 	} else if (bone.type == 1){
 		strokeWeight(4*width); 
-		stroke(150);
+		stroke((230*(1-meanPredictionAccuracy))-50, (210*meanPredictionAccuracy)-50, 0);
+		//stroke(150);
+		//stroke(200, 55, 0);
 	} else if (bone.type == 2){
 		strokeWeight(2*width); 
-		stroke(50);
+		stroke((230*(1-meanPredictionAccuracy))-100, (210*meanPredictionAccuracy)-100, 0);
+		//stroke(50);
+		//stroke(150, 155, 0);
 	} else {
 		strokeWeight(1*width);
-		stroke(51);
+		stroke((230*(1-meanPredictionAccuracy))-150, (210*meanPredictionAccuracy)-150, 0);
+		//stroke(0, 200, 0);
 	}
 	
 	//Draw lines
