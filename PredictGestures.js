@@ -16,10 +16,10 @@ var timeSinceLastDigitChange = new Date();
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
-    // if (trainingCompleted == false){
-    //     TrainKNNIfNotDoneYet()
-    //     Train();     
-    // }
+    if (trainingCompleted == false){
+        //TrainKNNIfNotDoneYet()
+        Train();     
+    }
 	DetermineState(frame);
 	if (programState==0) {
 		HandleState0(frame);
@@ -40,73 +40,10 @@ function DetermineState(frame){
 	}
 }
 
-function HandIsUncentered(){
-	if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToTheUp() || HandIsTooFarToTheDown() || HandIsTooFarAway() || HandIsTooFarToward()){
-		return true;
-	}
-	return false;
-}
-function HandIsTooFarToTheLeft(){
-	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	//All 40 x-coor
-	var currentMean = xValues.mean();					//The avg of all 40
-	if (currentMean < 0.25){
-		return true;
-	} else {
-		return false;
-	}
-}
-function HandIsTooFarToTheRight(){
-	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	
-	var currentMean = xValues.mean();
-	if (currentMean > 0.75){
-		return true;
-	} else {
-		return false;
-	}
-}
-function HandIsTooFarToTheDown(){
-	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-	var currentMeanY = yValues.mean();
-	if (currentMeanY < 0.25){
-		return true;
-	} else {
-		return false;
-	}
-}
-function HandIsTooFarToTheUp(){
-	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-	var currentMeanY = yValues.mean();
-	if (currentMeanY > 0.75){
-		return true;
-	} else {
-		return false;
-	}
-}
-function HandIsTooFarAway(){
-	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
-	currentMeanZ = zValues.mean();
-	if (currentMeanZ < 0.25){
-		return true;
-	} else {
-		return false;
-	}
-}
-function HandIsTooFarToward(){
-	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
-	currentMeanZ = zValues.mean();
-	if (currentMeanZ > 0.75){
-		return true;
-	} else {
-		return false;
-	}
-}
-
-
 function HandleState0(frame) {	//No hand(s)
 	//TrainKNNIfNotDoneYet()
 	DrawImageToHelpUserPutTheirHandOverTheDevice()
 }
-
 function HandleState1(frame){	//Hand(s) uncentered
 	HandleFrame(frame); 
 	if (HandIsTooFarToTheLeft()){
@@ -142,12 +79,18 @@ function DrawLowerRightPanel(){
 }
 function DetermineWhetherToSwitchDigits() {
 	if(TimeToSwitchDigits() == true){
-		SwitchDigits()
+		SwitchDigits();
 	}
-	
 }
 function TimeToSwitchDigits(){
-	return false;
+	var currentTime = new Date();
+	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
+	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
+
+	if (ElapsedInSeconds >= 5){
+		timeSinceLastDigitChange = new Date();
+		return true;
+	}
 }
 function SwitchDigits(){
 	if(digitToShow == 1){
@@ -157,43 +100,20 @@ function SwitchDigits(){
 	}
 }
 
-
-function DrawImageToHelpUserPutTheirHandOverTheDevice(){
-	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowRight(){
-	image(imgHandRight, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowLeft(){
-	image(imgHandLeft, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowDown(){
-	image(imgHandDown, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowUp(){
-	image(imgHandUp, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowToward(){
-	image(imgHandToward, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-function DrawArrowAway(){
-	image(imgHandAway, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
-}
-
 function Train(){
     trainingCompleted = true;
     for (var i = 0; i < train8.shape[3]; i++) {
       var features = train0.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),0);
-      //console.log(i + " " + features + " " + 0);
+      console.log(i + " " + features + " " + 0);
 
       //For digit 1 INDEX FINGER TO THE LEFT/SLANTED UP
       features = train1.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
-      //console.log(i + " " + features + " " + 1);
+      console.log(i + " " + features + " " + 1);
       features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),1);
-      //console.log(i + " " + features + " " + 1);
+      console.log(i + " " + features + " " + 1);
       
       //For digit 2 have to FLATTEN hand right above 
       features = train2.pick(null,null,null,i).reshape(1,120);
@@ -227,12 +147,12 @@ function Train(){
       //console.log(i + " " + features + " " + 6);
 
       //Digit 7 have to STRAITHEN hand directly above - BACK UP
-      features = train7.pick(null,null,null,i).reshape(1,120);
-      knnClassifier.addExample(features.tolist(),7);
+      // features = train7.pick(null,null,null,i).reshape(1,120);
+      // knnClassifier.addExample(features.tolist(),7);
       //console.log(i + " " + features + " " + 7);
       features = train7Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),7);
-      //console.log(i + " " + features + " " + 7);
+      console.log(i + " " + features + " " + 7);
 
       //Digit 8 have to FLATTEN hand directly above - MID HEIGHT
       // features = train8.pick(null,null,null,i).reshape(1,120);
@@ -245,16 +165,16 @@ function Train(){
       //Digit 9 have to SLANT/ANGLR hand directly above
       features = train9.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
-      //console.log(i + " " + features + " " + 9);
+      console.log(i + " " + features + " " + 9);
       features = train9Bongard.pick(null,null,null,i).reshape(1,120);
       knnClassifier.addExample(features.tolist(),9);
-      //console.log(i + " " + features + " " + 9);
+      console.log(i + " " + features + " " + 9);
     }
    
 }
 
 function Test(){	
-	CenterData();
+	CenterData(); //?????
 	var currentFeatures =  oneFrameOfData.pick(null,null,null).reshape(1,120);
  	var predictedLabel = knnClassifier.classify(currentFeatures.tolist());
  	knnClassifier.classify(currentFeatures.tolist(),GotResults);
@@ -280,7 +200,7 @@ function HandleFrame(frame) {
 		//Grabs 1st hand per frame
 		var hand = frame.hands[0];
 		HandleHand(hand,1,InteractionBox);
-		//Test();
+		Test();
 		if(frame.hands.length == 2){
 			//Grabs 2nd hand per frame
 			//var hand = frame.hands[1];
@@ -421,6 +341,92 @@ function CenterDataZ(){
 	}
 }
 
+//Images Drawn when no hands & uncentered
+function DrawImageToHelpUserPutTheirHandOverTheDevice(){
+	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowRight(){
+	image(imgHandRight, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowLeft(){
+	image(imgHandLeft, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowDown(){
+	image(imgHandDown, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowUp(){
+	image(imgHandUp, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowToward(){
+	image(imgHandToward, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+function DrawArrowAway(){
+	image(imgHandAway, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
+}
+
+//When hand is uncentered
+function HandIsUncentered(){
+	if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToTheUp() || HandIsTooFarToTheDown() || HandIsTooFarAway() || HandIsTooFarToward()){
+		return true;
+	}
+	return false;
+}
+function HandIsTooFarToTheLeft(){
+	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	//All 40 x-coor
+	var currentMean = xValues.mean();					//The avg of all 40
+	if (currentMean < 0.25){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToTheRight(){
+	var xValues = oneFrameOfData.slice([],[],[0,6,3]);	
+	var currentMean = xValues.mean();
+	if (currentMean > 0.75){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToTheDown(){
+	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+	var currentMeanY = yValues.mean();
+	if (currentMeanY < 0.25){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToTheUp(){
+	var yValues = oneFrameOfData.slice([],[],[1,6,3]);
+	var currentMeanY = yValues.mean();
+	if (currentMeanY > 0.75){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarAway(){
+	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+	currentMeanZ = zValues.mean();
+	if (currentMeanZ < 0.25){
+		return true;
+	} else {
+		return false;
+	}
+}
+function HandIsTooFarToward(){
+	var zValues = oneFrameOfData.slice([],[],[2,6,3]);
+	currentMeanZ = zValues.mean();
+	if (currentMeanZ > 0.75){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
 function SignIn(){
 	//Get username from html input using id
 	var username = document.getElementById('username').value;
@@ -464,5 +470,3 @@ function CreateSignInItem(username,list){
 		item2.innerHTML = 1;
 		list.appendChild(item2);
 }
-
-
