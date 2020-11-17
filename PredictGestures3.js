@@ -11,12 +11,14 @@ var numPrediction = 0;
 var meanPredictionAccuracy = 0;
 var digitTested = 1;
 var programState = 0;
-var digitToShow = 0;
+var digitToShow = 1;
 var timeSinceLastDigitChange = new Date();
-var timeSinceAccuracyMet = new Date();
-var accuracyReached = false;
-var switchImg = false;
 var timeWithDigit = false;
+var maxTimeWindow = 6
+var minTimeWindow = 1
+var timeWindowPerDigit = [ maxTimeWindow, maxTimeWindow, maxTimeWindow];
+var timewindow;
+
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -70,17 +72,12 @@ function HandleState1(frame){	//Hand(s) uncentered
 	}
 }
 function HandleState2(frame){	//Hand(s) centered
-	HandleFrame(frame); 
-
+	HandleFrame(frame);
+	DrawLowerRightPaneDigit();
+	//Starts after as new image of digit is put on screen 
 	if (timeWithDigit == false){
 		timeSinceLastDigitChange = new Date();
 		timeWithDigit = true;
-	}
-	
-	if (switchImg == false){
-		DrawLowerRightPaneDigit();
-	} else {
-		DrawLowerRightPaneASLDigit();
 	}
 	DetermineWhetherToSwitchDigits();
 }
@@ -139,62 +136,91 @@ function DetermineWhetherToSwitchDigits() {
 }
 function TimeToSwitchDigits(){
 	//Count seconds passed since digit presented
-	var currentTimeNow = new Date();
-	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTimeNow;
+	var currentTime = new Date();
+	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
 	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
 
-	//If 5 seconds pass 
-	if (ElapsedInSeconds >= 5){
-		switchImg = true;
-	}
-	
-
-	//Must meet an accuracy of 50%
-	if (meanPredictionAccuracy >= .50){
-		if (accuracyReached == false){
-			//Once accurracy is met, count how many seconds after
-			timeSinceAccuracyMet = new Date();
-			accuracyReached = true
+	//Must meet an accuracy of 50% or 5 seconds pass
+	timewindow = TimeWidowForDigit(0)	//No time change just getting time window
+	console.log(ElapsedInSeconds);
+	if (meanPredictionAccuracy >= .50 && ElapsedInSeconds >= timewindow){
+		if (((timewindow + 1) > ElapsedInSeconds) &&  (ElapsedInSeconds >= timewindow)){
+			var changeTime = TimeWidowForDigit(-1);
+			console.log('Reduced');
+			console.log(changeTime);
+		} else {
+			var changeTime = TimeWidowForDigit(1);
+			console.log('Increased');
+			console.log(changeTime);
 		}
-		var currentTime = new Date();
-		var ElapsedInMilliseconds = timeSinceAccuracyMet - currentTime;
-		var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
-		
-		//Must stay for 5 seconds
-		if (ElapsedInSeconds >= 3){
-			//SWITCHES DIGITS & resets everthing
-			//timeSinceLastDigitChange = new Date();
-			accuracyReached = false;
-			switchImg = false;
-			timeWithDigit = false;
-			return true;
-		}	
+		timeSinceLastDigitChange = new Date();
+		timeWithDigit = false;
+		return true;	
 	}
+}
+function TimeWidowForDigit(timechange){
+	if (digitToShow == 1){
+		if ((timeWindowPerDigit[0] + timechange) < minTimeWindow){
+			return timeWindowPerDigit[0];
+		} else if ((timeWindowPerDigit[0] + timechange) > maxTimeWindow){
+			return timeWindowPerDigit[0];
+		} else {
+			timeWindowPerDigit[0] = timeWindowPerDigit[0] + timechange;
+			return timeWindowPerDigit[0];
+		}
+	} else if (digitToShow == 2){
+		if ((timeWindowPerDigit[1] + timechange) < minTimeWindow){
+			return timeWindowPerDigit[1];
+		} else if ((timeWindowPerDigit[1] + timechange) > maxTimeWindow){
+			return timeWindowPerDigit[1];
+		} else {
+			timeWindowPerDigit[1] = timeWindowPerDigit[1] + timechange;
+			return timeWindowPerDigit[1];
+		}
+	} else if (digitToShow == 3){
+		if ((timeWindowPerDigit[2] + timechange) < minTimeWindow){
+			return timeWindowPerDigit[2];
+		} else if ((timeWindowPerDigit[2] + timechange) > maxTimeWindow){
+			return timeWindowPerDigit[2];
+		} else {
+			timeWindowPerDigit[2] = timeWindowPerDigit[2] + timechange;
+			return timeWindowPerDigit[2];
+		}
+	}
+
 }
 function SwitchDigits(){
 	//Reset numResults/numPrediction
 	numPrediction = 0;
-	if (digitToShow == 0){
-		digitToShow = 1;
-	} else if (digitToShow == 1){
+	if (digitToShow == 1){
 		digitToShow = 2;
 	} else if (digitToShow == 2){
 		digitToShow = 3;
 	} else if (digitToShow == 3){
-		digitToShow = 4;
-	} else if (digitToShow == 4){
-		digitToShow = 5;
-	} else if (digitToShow == 5){
-		digitToShow = 6;
-	} else if (digitToShow == 6){
-		digitToShow = 7;
-	} else if (digitToShow == 7){
-		digitToShow = 8;
-	} else if (digitToShow == 8){
-		digitToShow = 9;
-	} else if (digitToShow == 9){
-		digitToShow = 0;
+		digitToShow = 1;
 	}
+
+	// if (digitToShow == 0){
+	// 	digitToShow = 1;
+	// } else if (digitToShow == 1){
+	// 	digitToShow = 2;
+	// } else if (digitToShow == 2){
+	// 	digitToShow = 3;
+	// } else if (digitToShow == 3){
+	// 	digitToShow = 4;
+	// } else if (digitToShow == 4){
+	// 	digitToShow = 5;
+	// } else if (digitToShow == 5){
+	// 	digitToShow = 6;
+	// } else if (digitToShow == 6){
+	// 	digitToShow = 7;
+	// } else if (digitToShow == 7){
+	// 	digitToShow = 8;
+	// } else if (digitToShow == 8){
+	// 	digitToShow = 9;
+	// } else if (digitToShow == 9){
+	// 	digitToShow = 0;
+	// }
 }
 //TRAINING-----------------------------------------------------------------
 function Train(){
@@ -258,8 +284,8 @@ function Train(){
 
 
       	//Digit 6 have to FLATTEN hand directly above (go down)
-      	features = train6.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),6);
+      	// features = train6.pick(null,null,null,i).reshape(1,120);
+      	// knnClassifier.addExample(features.tolist(),6);
       	//console.log(i + " " + features + " " + 6);
       	features = train6Bongard.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),6);
@@ -308,7 +334,8 @@ function GotResults(err, result){
     meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitToShow))/numPrediction;
     //Accuracy
     //console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
-    console.log(meanPredictionAccuracy.toFixed(4) + " " + currentPrediction);
+    
+    //console.log(meanPredictionAccuracy.toFixed(4) + " " + currentPrediction);
 
 }
 

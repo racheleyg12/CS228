@@ -17,6 +17,17 @@ var imgDigit7;
 var imgDigit8;
 var imgDigit9;
 
+var img0;
+var img1;
+var img2;
+var img3;
+var img4;
+var img5;
+var img6;
+var img7;
+var img8;
+var img9;
+
 
 //drawing canvas is ‘spread’ over the entire browser window
 function setup() {
@@ -39,4 +50,15 @@ function setup() {
 	imgDigit7 = loadImage('https://i.imgur.com/kHrlckl.png');
 	imgDigit8 = loadImage('https://i.imgur.com/xD05bGZ.png');
 	imgDigit9 = loadImage('https://i.imgur.com/9VdqrnK.png');
+
+	img0 = loadImage('https://i.imgur.com/wJzkOpe.png');
+	img1 = loadImage('https://i.imgur.com/He8ZR5y.png');
+	img2 = loadImage('https://i.imgur.com/tuGSboY.png');
+	img3 = loadImage('https://i.imgur.com/PEcG2sH.png');
+	img4 = loadImage('https://i.imgur.com/uAOqIjn.png');
+	img5 = loadImage('https://i.imgur.com/wSZgUF7.png');
+	img6 = loadImage('https://i.imgur.com/EAN1dYo.png');
+	img7 = loadImage('https://i.imgur.com/qHOCOIM.png');
+	img8 = loadImage('https://i.imgur.com/T9K8ckV.png');
+	img9 = loadImage('https://i.imgur.com/VYktiSD.png');
 }

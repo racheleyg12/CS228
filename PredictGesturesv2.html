@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<!-- Including the Leap Motion Javascript library -->
+		<script src="http://js.leapmotion.com/leap-0.6.3.min.js"></script>
+		<!-- Including the P5 library -->
+		<script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+		<!-- Including the numjs library -->
+		<script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+		<!-- Including the kNN -- ML5 machine learning library. -->
+		<script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+		<!-- Including javascript code -->
+		<script src="prepareToDraw.js"></script>
+		<script src="PredictGesturesv2.js"></script>	
+
+		<script src="classData/train8Bongard.js"></script>
+		<script src="train8.js"></script>
+
+		<script src="train9.js"></script>
+		<script src="classData/train9Bongard.js"></script>
+
+		<script src="classData/train0Bongard.js"></script>
+		<script src="train0G2.js"></script>
+		<script src="train0Goldman.js"></script>
+
+		<script src="classData/train1Allison.js"></script>
+		<script src="classData/train1McLaughlin.js"></script>
+		<script src="classData/train1Bongard.js"></script>
+		<script src="classData/train1Goldman.js"></script>
+
+		<script src="classData/train2Bongard.js"></script>
+		<script src="classData/train2Neff.js"></script>
+		<script src="classData/train2Goldman.js"></script>
+
+		<script src="classData/train3Bongard.js"></script>
+
+		<script src="classData/train4Sheboy.js"></script>
+
+		<script src="classData/train5Bongard.js"></script>
+		<script src="classData/train5Manian.js"></script>
+
+		<script src="classData/train6Fekert.js"></script>
+		<script src="classData/train6Bongard.js"></script>
+
+		<script src="classData/train7Manian.js"></script>
+
+		<script src="classData/train7Bongard.js"></script>
+	</head>
+	<body>
+		<main>
+			<p>Hello World!</p>
+			<!-- Form to allow users to sign into system -->
+			<form id="myform">
+				<input id="username" type="text" name="username" placeholder="name">
+				<button onclick="return SignIn();" type="submit">Sign in</button>
+			</form>
+		</main>
+		<ul id="users" style = "color:white">
+		<li>user1</li>
+		<li id="Rachel1_name">Rachel1</li><li id="Rachel1_signins">1</li>
+		<li id="Rachel2_name">Rachel2</li><li id="Rachel2_signins">1</li>
+		<li id="Rachel3_name">Rachel3</li><li id="Rachel3_signins">1</li><li id="Rachel4_name">Rachel4</li><li id="Rachel4_signins">1</li><li id="Rachel5_name">Rachel5</li><li id="Rachel5_signins">1</li>
+		<li id="Rachel6_name">Rachel6</li><li id="Rachel6_signins">1</li><li id="Rachel7_name">Rachel7</li><li id="Rachel7_signins">1</li><li id="Rachel8_name">Rachel8</li><li id="Rachel8_signins">1</li>
+		</ul>
+	</body>
+</html>
