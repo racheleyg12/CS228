@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<!-- Including the Leap Motion Javascript library -->
+		<script src="http://js.leapmotion.com/leap-0.6.3.min.js"></script>
+		<!-- Including the P5 library -->
+		<script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+		<!-- Including the numjs library -->
+		<script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+		<!-- Including the kNN -- ML5 machine learning library. -->
+		<script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+		<!-- Including javascript code -->
+		<script src="prepareToDrawLetters.js"></script>
+		<script src="PredictLetters.js"></script>	
+
+		<!-- Changed this -->
+		<script src="Letters/trainA.js"></script>
+		<script src="Letters/trainB.js"></script>
+		<script src="Letters/trainB2.js"></script>
+		<script src="Letters/trainC.js"></script>
+		<script src="Letters/trainC2.js"></script>
+		<script src="Letters/trainC3.js"></script>
+		<script src="Letters/trainC4.js"></script>
+		<script src="Letters/trainD.js"></script>
+		<script src="Letters/trainD2.js"></script>
+		<script src="Letters/trainD3.js"></script>
+		<script src="Letters/trainD4.js"></script>
+		<script src="Letters/trainD5.js"></script>
+		<script src="Letters/trainE.js"></script>
+		<script src="Letters/trainE2.js"></script>
+		<script src="Letters/trainE3.js"></script>
+		<script src="Letters/trainE4.js"></script>
+		<script src="Letters/trainE5.js"></script>
+		<script src="Letters/trainE6.js"></script>
+		<script src="Letters/trainF.js"></script>
+		<script src="Letters/trainF2.js"></script>
+		<script src="Letters/trainF3.js"></script>
+		<script src="Letters/trainF4.js"></script>
+		<script src="Letters/trainF5.js"></script>
+		<script src="Letters/trainF6.js"></script>
+		<script src="Letters/trainG.js"></script>
+		<script src="Letters/trainH.js"></script>
+		<script src="Letters/trainI.js"></script>
+
+		<script src="LettersCentered/trainACentered.js"></script>
+		<script src="LettersCentered/trainBCentered.js"></script>
+		<script src="LettersCentered/trainCCentered.js"></script>
+		<script src="LettersCentered/trainDCentered.js"></script>
+		<script src="LettersCentered/trainECentered.js"></script>
+		<script src="LettersCentered/trainFCentered.js"></script>
+		<script src="LettersCentered/trainGCentered.js"></script>
+		<script src="LettersCentered/trainHCentered.js"></script>
+		<script src="LettersCentered/trainICentered.js"></script>
+
+	</head>
+	<body>
+		<main>
+			<p>Hello World!</p>
+			<!-- Form to allow users to sign into system -->
+			<form id="myform">
+				<input id="username" type="text" name="username" placeholder="name">
+				<button onclick="return SignIn();" type="submit">Sign in</button>
+			</form>
+		</main>
+		<ul id="users" style = "color:white">
+		<li>user1</li>
+		<li id="Rachel1_name">Rachel1</li><li id="Rachel1_signins">1</li>
+		<li id="Rachel2_name">Rachel2</li><li id="Rachel2_signins">1</li>
+		<li id="Rachel3_name">Rachel3</li><li id="Rachel3_signins">1</li><li id="Rachel4_name">Rachel4</li><li id="Rachel4_signins">1</li><li id="Rachel5_name">Rachel5</li><li id="Rachel5_signins">1</li>
+		<li id="Rachel6_name">Rachel6</li><li id="Rachel6_signins">1</li><li id="Rachel7_name">Rachel7</li><li id="Rachel7_signins">1</li><li id="Rachel8_name">Rachel8</li><li id="Rachel8_signins">1</li>
+		</ul>
+	</body>
+</html>
