@@ -73,24 +73,26 @@ function HandleState2(frame){	//Hand(s) centered
 }
 function DrawLowerRightPanel(){
 	if (digitToShow == 0){
-		image(imgAslA, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 1){
-		image(imgAslB, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if(digitToShow == 2){	
-		image(imgAslC, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 3){
-		image(imgAslD, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 4){
-		image(imgAslE, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 5){
-		image(imgAslF, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 6){
-		image(imgAslG, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 7){
-		image(imgAslH, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		image(imgBinary7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
 	} else if (digitToShow == 8){
-		image(imgAslI, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	}
+		image(imgBinary8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	} else if (digitToShow == 9){
+		image(imgBinary9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	} 
 }
 
 //SWITCHING DIGITS-------------------------------------------------------------------
@@ -100,14 +102,9 @@ function DetermineWhetherToSwitchDigits() {
 	}
 }
 function TimeToSwitchDigits(){
-	var currentTime = new Date();
-	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
-	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
-
-	//Change digit - Must meet an accuracy of 50%
+	//Change digit - Must meet an accuracy of 70%
 	if (meanPredictionAccuracy >= .50){
 		if (accuracyReached == false){
-			//Last Digit Change happens only when accuracy is met
 			timeSinceLastDigitChange = new Date();
 			accuracyReached = true
 		}
@@ -115,7 +112,7 @@ function TimeToSwitchDigits(){
 		var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
 		var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
 		
-		//Must stay 50% for 5 seconds
+		//Must stay 50% for 3 seconds
 		if (ElapsedInSeconds >= 3){
 			timeSinceLastDigitChange = new Date();
 			accuracyReached = true
@@ -135,194 +132,111 @@ function SwitchDigits(){
 	} else if (digitToShow == 3){
 		digitToShow = 4;
 	} else if (digitToShow == 4){
+		digitToShow = 5;
+	} else if (digitToShow == 5){
+		digitToShow = 6;
+	} else if (digitToShow == 6){
+		digitToShow = 7;
+	} else if (digitToShow == 7){
+		digitToShow = 8;
+	} else if (digitToShow == 8){
+		digitToShow = 9;
+	} else if (digitToShow == 9){
 		digitToShow = 0;
-	} 
-
-  // else if (digitToShow == 5){
-	// 	digitToShow = 6;
-	// } else if (digitToShow == 6){
-	// 	digitToShow = 7;
-	// } else if (digitToShow == 7){
-	// 	digitToShow = 8;
-	// } else if (digitToShow == 8){
-	// 	digitToShow = 0;
-	// }
+	}
 }
 //TRAINING-----------------------------------------------------------------
 function Train(){
     trainingCompleted = true;
-    for (var i = 0; i < trainA.shape[3]; i++) {
-
-    	//For A 
-      	var features = trainA.pick(null,null,null,i).reshape(1,120);
+    for (var i = 0; i < train8.shape[3]; i++) {
+    	//For digit 0 HOLD HIGHT ABOVE & TO THE LEFT!
+      	var features = train0.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),0);
-      	console.log(i + " " + features + " " + 0 + "=A");
+      	console.log(i + " " + features + " " + 0);
+      	// 1
+      	// features = train0Goldman.pick(null,null,null,i).reshape(1,120);
+      	// knnClassifier.addExample(features.tolist(),0);
+      	// console.log(i + " " + features + " " + 0);
 
-	  	//For B OUTWORD 	NOW:SLANTED
-	 	features = trainB.pick(null,null,null,i).reshape(1,120);
+	  	//For digit 1 INDEX FINGER TO THE LEFT/SLANTED UP
+	    features = train1.pick(null,null,null,i).reshape(1,120);
 		knnClassifier.addExample(features.tolist(),1);
-		console.log(i + " " + features + " " + 1 + "=B");
-		//Centered
-		features = trainB2.pick(null,null,null,i).reshape(1,120);
+		console.log(i + " " + features + " " + 1 + "a");
+		features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
 		knnClassifier.addExample(features.tolist(),1);
-		console.log(i + " " + features + " " + 1 + "=B2");
+		console.log(i + " " + features + " " + 1 + "b");
+		// 1
+		// features = train1Bongard.pick(null,null,null,i).reshape(1,120);
+		// knnClassifier.addExample(features.tolist(),1);
+		// console.log(i + " " + features + " " + 1 + "c");
+		// features = train1Goldman.pick(null,null,null,i).reshape(1,120);
+		// knnClassifier.addExample(features.tolist(),1);
+		// console.log(i + " " + features + " " + 1 + "d");
+
       
-      	//For C 
-      	features = trainC.pick(null,null,null,i).reshape(1,120);
+      	//For digit 2 have to FLATTEN hand right above 
+      	features = train2.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),2);
-      	console.log(i + " " + features + " " + 2 + "=C");
-      	features = trainC2.pick(null,null,null,i).reshape(1,120);
+      	console.log(i + " " + features + " " + 2);
+      	features = train2Neff.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),2);
-      	console.log(i + " " + features + " " + 2 + "=C2");
-      	features = trainC3.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),2);
-      	console.log(i + " " + features + " " + 2 + "=C3");
-      	features = trainC4.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),2);
-      	console.log(i + " " + features + " " + 2 + "=C4");
-      	features = trainCCentered.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),2);
-      	console.log(i + " " + features + " " + 2 + "=CCentered");
+      	console.log(i + " " + features + " " + 2);
 
-      	//For D ^UP & TOWARD BODY - FINGER FLAT
-      	// features = trainD.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),3);
-      	// console.log(i + " " + features + " " + 3 + "=D");
-      	features = trainD2.pick(null,null,null,i).reshape(1,120);
+      	//For digit 3 have to FLATTEN hand right above 
+      	features = train3.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),3);
-      	console.log(i + " " + features + " " + 3 + "=D2");
-      	features = trainD3.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),3);
-      	console.log(i + " " + features + " " + 3 + "=D3");
-      	//Centered
-      	features = trainD4.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),3);
-      	console.log(i + " " + features + " " + 3 + "=D4");
-      	//unCentered, more D
-      	features = trainD5.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),3);
-      	console.log(i + " " + features + " " + 3 + "=D5");
+      	//console.log(i + " " + features + " " + 3);
 
-      	//For E DIRECTLY DOWN & UP HIGH! & DIRECTLY OVER
-      	// features = trainE.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),4);
-      	// console.log(i + " " + features + " " + 4 + "=E");
-      	// features = trainE2.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),4);
-      	// console.log(i + " " + features + " " + 4 + "=E2");
-      	//centered
-      	features = trainE3.pick(null,null,null,i).reshape(1,120);
+      	//Digit 4 is amazing, hand can be anywhere (go up) UP!
+      	features = train4.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),4);
-      	console.log(i + " " + features + " " + 4 + "=E3");
-      	//centered
-      	features = trainE4.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),4);
-      	console.log(i + " " + features + " " + 4 + "=E4");
-      	features = trainE5.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),4);
-      	console.log(i + " " + features + " " + 4 + "=E5");
-      	features = trainE6.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),4);
-      	console.log(i + " " + features + " " + 4 + "=E6");
-      	features = trainECentered.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),4);
-      	console.log(i + " " + features + " " + 4 + "=E7");
+      	//console.log(i + " " + features + " " + 4);
 
-      	//For F DIRECTLY DOWN  --LOW???
-      	// features = trainF.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F");
-      	//Josh's 9
-      	features = trainF2.pick(null,null,null,i).reshape(1,120);
+      	//Digit 5 have to FLATTEN hand directly above 
+      	features = train5.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F2");
-      	//Centered
-      	// features = trainF3.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F3");
-      	
-      	//Uncentered & moving
-      	features = trainF4.pick(null,null,null,i).reshape(1,120);
+      	console.log(i + " " + features + " " + 5);
+      	features = train5Manian.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F4");
-      	features = trainF5.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F5");
-      	features = trainF6.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F6");
-
-      	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F6");
-      	knnClassifier.addExample(features.tolist(),5);
-      	console.log(i + " " + features + " " + 5 + "=F6");
+      	console.log(i + " " + features + " " + 5);
+      	//1
+      	// features = train5Goldman.pick(null,null,null,i).reshape(1,120);
       	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	// knnClassifier.addExample(features.tolist(),5);
-      	// console.log(i + " " + features + " " + 5 + "=F6");
-      	
+      	// console.log(i + " " + features + " " + 5);
 
 
-      	//For H
-      	features = trainH.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),7);
-      	console.log(i + " " + features + " " + 7 + "=H");
-
-      	//For I
-      	features = trainI.pick(null,null,null,i).reshape(1,120);
-      	knnClassifier.addExample(features.tolist(),8);
-      	console.log(i + " " + features + " " + 8 + "=I");
-
-      	//For G
-      	features = trainG.pick(null,null,null,i).reshape(1,120);
+      	//Digit 6 have to FLATTEN hand directly above (go down)
+      	features = train6.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),6);
-      	console.log(i + " " + features + " " + 6 + "=G");
-  		
-  	// 		//For A 
-    //   	var features = trainACentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),0);
-    //   	console.log(i + " " + features + " " + 0 + "=A");
-    //   	//For B 
-    //   	features = trainBCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),1);
-    //   	console.log(i + " " + features + " " + 1 + "=B");
-    //   	//For C
-    //   	features = trainCCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),2);
-    //   	console.log(i + " " + features + " " + 2 + "=C");
-    //   	//For D
-    //   	features = trainDCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),3);
-    //   	console.log(i + " " + features + " " + 3 + "=D");
-    //   	//For E 
-    //   	features = trainECentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),4);
-    //   	console.log(i + " " + features + " " + 4 + "=E");
-    //   	//For F
-    //   	features = trainFCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),5);
-    //   	console.log(i + " " + features + " " + 5 + "=F");
-    //   	//For G
-    //   	features = trainGCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),6);
-    //   	console.log(i + " " + features + " " + 6 + "=G");
-    //   	//For H
-    //   	features = trainHCentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),7);
-    //   	console.log(i + " " + features + " " + 7 + "=H");
-    //   	//For I
-    //   	features = trainICentered.pick(null,null,null,i).reshape(1,120);
-    //   	knnClassifier.addExample(features.tolist(),8);
-    //   	console.log(i + " " + features + " " + 8 + "=I");
+      	console.log(i + " " + features + " " + 6);
+      	features = train6Bongard.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),6);
+      	console.log(i + " " + features + " " + 6);
 
+      	//Digit 7 have to STRAITHEN hand directly above - BACK UP
+      	//1
+      	features = train7.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),7);
+      	console.log(i + " " + features + " " + 7);
+      	features = train7Bongard.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),7);
+      	console.log(i + " " + features + " " + 7);
+
+      	//Digit 8 have to FLATTEN hand directly above - LEFT & FOWARD ON SLANT
+      	// features = train8.pick(null,null,null,i).reshape(1,120);
+      	// knnClassifier.addExample(features.tolist(),8);
+      	// console.log(i + " " + features + " " + 8);
+      	features = train8Bongard.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),8);
+      	console.log(i + " " + features + " " + 8);
+
+      	//Digit 9 have to SLANT/ANGLR hand directly above - LEFT & FOWARD FINGERS OUT
+      	features = train9.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),9);
+      	console.log(i + " " + features + " " + 9);
+      	features = train9Bongard.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),9);
+      	console.log(i + " " + features + " " + 9);
     }
    
 }
@@ -343,27 +257,7 @@ function GotResults(err, result){
     meanPredictionAccuracy = (((numPrediction-1)*meanPredictionAccuracy) + (currentPrediction == digitToShow))/numPrediction;
     //Accuracy
     //console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
-    var aslLetter;
-    if (currentPrediction == 0){
-    	aslLetter = "A";
-    } else if (currentPrediction == 1){
-    	aslLetter = "B";
-    } else if (currentPrediction == 2){
-    	aslLetter = "C";
-    } else if (currentPrediction == 3){
-    	aslLetter = "D";
-    } else if (currentPrediction == 4){
-    	aslLetter = "E";
-    } else if (currentPrediction == 5){
-    	aslLetter = "F";
-    } else if (currentPrediction == 6){
-    	aslLetter = "G";
-    } else if (currentPrediction == 7){
-    	aslLetter = "H";
-    } else if (currentPrediction == 8){
-    	aslLetter = "I";
-    }
-    console.log(meanPredictionAccuracy.toFixed(4) + " " + currentPrediction+ ":" + aslLetter);
+    console.log(meanPredictionAccuracy.toFixed(4) + " " + currentPrediction);
 
 }
 

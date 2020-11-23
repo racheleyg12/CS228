@@ -28,6 +28,27 @@ var img7;
 var img8;
 var img9;
 
+var imgAns0;
+var imgAns1;
+var imgAns2;
+var imgAns3;
+var imgAns4;
+var imgAns5;
+var imgAns6;
+var imgAns7;
+var imgAns8;
+var imgAns9;
+
+var imgBinary0;
+var imgBinary1;
+var imgBinary2;
+var imgBinary3;
+var imgBinary4;
+var imgBinary5;
+var imgBinary6;
+var imgBinary7;
+var imgBinary8;
+var imgBinary9;
 
 //drawing canvas is ‘spread’ over the entire browser window
 function setup() {
@@ -61,4 +82,29 @@ function setup() {
 	img7 = loadImage('https://i.imgur.com/qHOCOIM.png');
 	img8 = loadImage('https://i.imgur.com/T9K8ckV.png');
 	img9 = loadImage('https://i.imgur.com/VYktiSD.png');
+
+	imgAns0 = loadImage('https://i.imgur.com/BoobK0i.png');
+	imgAns1 = loadImage('https://i.imgur.com/wkRI55Z.png');
+	imgAns2 = loadImage('https://i.imgur.com/rLeE9mp.png');
+	imgAns3 = loadImage('https://i.imgur.com/C7VbmpL.png');
+	imgAns4 = loadImage('https://i.imgur.com/JHJR3nL.png');
+	imgAns5 = loadImage('https://i.imgur.com/rA84qdG.png');
+	imgAns6 = loadImage('https://i.imgur.com/YwqS23p.png');
+	imgAns7 = loadImage('https://i.imgur.com/E9r2mIL.png');
+	imgAns8 = loadImage('https://i.imgur.com/5m63eVA.png');
+	imgAns9 = loadImage('https://i.imgur.com/Z58TA7K.png');
+
+	imgBinary0 = loadImage('https://i.imgur.com/YNjfQKj.png');
+	imgBinary1 = loadImage('https://i.imgur.com/U9Pjg59.png');
+	imgBinary2 = loadImage('https://i.imgur.com/CeLvV5F.png');
+	imgBinary3 = loadImage('https://i.imgur.com/oJuatoL.png');
+	imgBinary4 = loadImage('https://i.imgur.com/UHMgJq3.png');
+	imgBinary5 = loadImage('https://i.imgur.com/2H5sf7g.png');
+	imgBinary6 = loadImage('https://i.imgur.com/mB9umMd.png');
+	imgBinary7 = loadImage('https://i.imgur.com/1UwtxBF.png');
+	imgBinary8 = loadImage('https://i.imgur.com/czUevGt.png');
+	imgBinary9 = loadImage('https://i.imgur.com/srbF70e.png');
+
+	//You could even do other languages like chinese
+
 }
