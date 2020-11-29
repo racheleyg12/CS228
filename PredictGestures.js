@@ -13,7 +13,14 @@ var digitTested = 1;
 var programState = 0;
 var digitToShow = 0;
 var timeSinceLastDigitChange = new Date();
-var accuracyReached = false
+var accuracyReached = false;
+//Store current accuracies per digit
+var currentCorrectSum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var timesDigitTested = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var currentMeanAccuracies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//Store pervious accuracies per digit
+var perviousCorrectSum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var printPerviousMeanAccuraciesOnce = false
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -28,6 +35,7 @@ Leap.loop(controllerOptions, function(frame){
 		HandleState1(frame);
  	} else {
  		HandleState2(frame);
+ 		printPerviousMeanAccuraciesOnce = true
  	}
 });
 
@@ -44,6 +52,11 @@ function DetermineState(frame){
 function HandleState0(frame) {	//No hand(s)
 	//TrainKNNIfNotDoneYet()
 	DrawImageToHelpUserPutTheirHandOverTheDevice()
+	//Print Mean Accuracy, 
+	if (printPerviousMeanAccuraciesOnce){
+		console.log(timesDigitTested);
+		printPerviousMeanAccuraciesOnce = false;
+	}
 }
 function HandleState1(frame){	//Hand(s) uncentered
 	HandleFrame(frame); 
@@ -70,6 +83,25 @@ function HandleState2(frame){	//Hand(s) centered
 	HandleFrame(frame); 
 	DrawLowerRightPanel();
 	DetermineWhetherToSwitchDigits();
+
+	//Write Accuracy to the screen
+	strokeWeight(0);
+	textSize(20);
+	fill(50);
+	text('Current Mean', window.innerWidth/8-70, window.innerHeight/2+60);
+	text('Accuracy:', window.innerWidth/8-70, window.innerHeight/2+80);
+	if (timesDigitTested[digitToShow] == 0){	//If first time signed of session
+		var printAccuracy =  meanPredictionAccuracy.toFixed(2).toString();
+	} else {	//Any sign after the first time signed of session
+		var printAccuracy =  (currentAccuraciesSum[digitToShow]/timesDigitTested[digitToShow]).toFixed(2).toString();
+	}
+	text(printAccuracy, window.innerWidth/8-70, window.innerHeight/2+100);
+
+	//Write Pervious Accuracy to the screen
+	text('Mean Accuracy', window.innerWidth/8-50+200, window.innerHeight/2+60);
+	text('Last Session:', window.innerWidth/8-50+200, window.innerHeight/2+80);
+	var printPervAcc = perviousMeanAccuracies[digitToShow].toFixed(2).toString();
+	text(printPervAcc, window.innerWidth/8-50+200, window.innerHeight/2+100);
 }
 function DrawLowerRightPanel(){
 	if (digitToShow == 0){
@@ -102,49 +134,65 @@ function DetermineWhetherToSwitchDigits() {
 	}
 }
 function TimeToSwitchDigits(){
-	//Change digit - Must meet an accuracy of 70%
+	//Change digit - Must meet an accuracy of 50%
 	if (meanPredictionAccuracy >= .50){
+		//Chance accuracy to reached
 		if (accuracyReached == false){
 			timeSinceLastDigitChange = new Date();
 			accuracyReached = true
 		}
+		//They will all have to be correct to move on to the next
+
 		var currentTime = new Date();
 		var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
 		var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
-		
+		//!!!!!!!!!!!!!!!!changed
 		//Must stay 50% for 3 seconds
-		if (ElapsedInSeconds >= 3){
+		if (ElapsedInSeconds >= 2){
 			timeSinceLastDigitChange = new Date();
-			accuracyReached = true
+			//Starts a new
+			accuracyReached = false
 			return true;
 		}	
 	}
 }
 function SwitchDigits(){
-	//Reset numResults/numPrediction
+	//Adds occurance to digt tested
+	timesDigitTested[digitToShow] =+ 1
+	//Add accracy to the sum of all Accuracies
+	currentCorrectSum[digitToShow] =+ meanPredictionAccuracy
+	//Starts a new - for meanPredictionAccuracy
 	numPrediction = 0;
-	if (digitToShow == 0){
-		digitToShow = 1;
-	} else if (digitToShow == 1){
+	
+	if (digitToShow == 1){
 		digitToShow = 2;
 	} else if (digitToShow == 2){
 		digitToShow = 3;
 	} else if (digitToShow == 3){
-		digitToShow = 4;
-	} else if (digitToShow == 4){
-		digitToShow = 5;
-	} else if (digitToShow == 5){
-		digitToShow = 6;
-	} else if (digitToShow == 6){
-		digitToShow = 7;
-	} else if (digitToShow == 7){
-		digitToShow = 8;
-	} else if (digitToShow == 8){
-		digitToShow = 9;
-	} else if (digitToShow == 9){
-		digitToShow = 0;
-	}
-}
+		digitToShow = 1;
+
+// 	if (digitToShow == 0){
+// 		digitToShow = 1;
+// 	} else if (digitToShow == 1){
+// 		digitToShow = 2;
+// 	} else if (digitToShow == 2){
+// 		digitToShow = 3;
+// 	} else if (digitToShow == 3){
+// 		digitToShow = 4; 
+// 	} else if (digitToShow == 4){
+// 		digitToShow = 5;
+// 	} else if (digitToShow == 5){
+// 		digitToShow = 6;
+// 	} else if (digitToShow == 6){
+// 		digitToShow = 7;
+// 	} else if (digitToShow == 7){
+// 		digitToShow = 8;
+// 	} else if (digitToShow == 8){
+// 		digitToShow = 9;
+// 	} else if (digitToShow == 9){
+// 		digitToShow = 0;
+// 	}
+// }
 //TRAINING-----------------------------------------------------------------
 function Train(){
     trainingCompleted = true;

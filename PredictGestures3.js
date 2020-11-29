@@ -14,10 +14,19 @@ var programState = 0;
 var digitToShow = 1;
 var timeSinceLastDigitChange = new Date();
 var timeWithDigit = false;
-var maxTimeWindow = 6
-var minTimeWindow = 1
-var timeWindowPerDigit = [ maxTimeWindow, maxTimeWindow, maxTimeWindow];
+//In order to make time window smaller
+var maxTimeWindow = 6;
+var minTimeWindow = 1;
+var timeWindowPerDigit = [maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow, maxTimeWindow];
 var timewindow;
+//In order to visualization that shows how their performance during their current session differs from their performance during their last
+//Store current accuracies per digit
+var currentCorrectSum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var timesDigitTested = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var currentMeanAccuracies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//Store pervious accuracies per digit
+var perviousCorrectAvg = [0, 0.75, 0.72, 0.79, 0, 0, 0, 0, 0];
+var printPerviousCorrectAvg = false;
 
 
 Leap.loop(controllerOptions, function(frame){
@@ -33,6 +42,7 @@ Leap.loop(controllerOptions, function(frame){
 		HandleState1(frame);
  	} else {
  		HandleState2(frame);
+ 		printPerviousCorrectAvg = true;
  	}
 });
 
@@ -49,6 +59,19 @@ function DetermineState(frame){
 function HandleState0(frame) {	//No hand(s)
 	//TrainKNNIfNotDoneYet()
 	DrawImageToHelpUserPutTheirHandOverTheDevice()
+	//Print Mean Accuracy, 
+	if (printPerviousCorrectAvg){
+		for (var i = 0; i < perviousCorrectAvg.length; i++) {
+			if (timesDigitTested[i] != 0){
+				perviousCorrectAvg[i] = currentCorrectSum[i]/timesDigitTested[i];
+			} else {
+				perviousCorrectAvg[i] = 0;
+			}
+			
+		}
+		console.log(perviousCorrectAvg);
+		printPerviousCorrectAvg = false;
+	}
 }
 function HandleState1(frame){	//Hand(s) uncentered
 	HandleFrame(frame); 
@@ -80,6 +103,34 @@ function HandleState2(frame){	//Hand(s) centered
 		timeWithDigit = true;
 	}
 	DetermineWhetherToSwitchDigits();
+	//Write Accuracy to the screen
+	strokeWeight(0);
+	textSize(20);
+	fill(50);
+	text('Current Average', window.innerWidth/8-70, window.innerHeight/2+60);
+	text('Correct:', window.innerWidth/8-70, window.innerHeight/2+80);
+	if (timesDigitTested[digitToShow] == 0){	//If first time signed of session
+		var printCorrect =  "N/A";
+	} else {	//Any sign after the first time signed of session
+		var printCorrect =  ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100).toFixed(2).toString() + "%";
+	}
+	text(printCorrect, window.innerWidth/8-70, window.innerHeight/2+100);
+
+	//Write Pervious Accuracy to the screen
+	text('Average Correct', window.innerWidth/8-50+200, window.innerHeight/2+60);
+	text('Last Session:', window.innerWidth/8-50+200, window.innerHeight/2+80);
+	var printPervCorrect = (perviousCorrectAvg[digitToShow].toFixed(2)*100).toString() + "%";
+	text(printPervCorrect, window.innerWidth/8-50+200, window.innerHeight/2+100);
+
+	//Write Average correct over all
+	text('Average Correct', window.innerWidth/8-70, window.innerHeight/2+60+100);
+	text('Over all Sessions:', window.innerWidth/8-70, window.innerHeight/2+80+100);
+
+	//Users rank compared to others
+	text('You rank ', window.innerWidth/8-50+200, window.innerHeight/2+60+100);
+	text('out of ', window.innerWidth/8-50+200, window.innerHeight/2+60+100+20);
+	text('on overall number correct digits signed', window.innerWidth/8-50+200, window.innerHeight/2+60+100+40);
+
 }
 function DrawLowerRightPaneASLDigit(){
 	if (digitToShow == 0){
@@ -143,21 +194,34 @@ function TimeToSwitchDigits(){
 	//Must meet an accuracy of 50% or 5 seconds pass
 	timewindow = TimeWidowForDigit(0)	//No time change just getting time window
 	console.log(ElapsedInSeconds);
-	if (meanPredictionAccuracy >= .50 && ElapsedInSeconds >= timewindow){
-		if (((timewindow + 1) > ElapsedInSeconds) &&  (ElapsedInSeconds >= timewindow)){
+
+	//Which ever is first: digit is signed corrected or time widow has run out
+	if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= timewindow){ //CHANGED!!!!!!!!!
+		//If digit is signed correctly within timewindow
+		if (meanPredictionAccuracy >= .50 && ElapsedInSeconds <= timewindow){
+			//Shorten time widow
 			var changeTime = TimeWidowForDigit(-1);
 			console.log('Reduced');
 			console.log(changeTime);
-		} else {
+			//Correct ASL digit
+			currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 1
+			console.log(digitToShow + " " + currentCorrectSum[digitToShow])
+		} else if (ElapsedInSeconds >= timewindow) { 
+			// Digit is NOT signed correctly within timewindow
 			var changeTime = TimeWidowForDigit(1);
 			console.log('Increased');
 			console.log(changeTime);
+			//Incorrect ASL digit
+			currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 0 
+			console.log(digitToShow + " " + currentCorrectSum[digitToShow])
 		}
 		timeSinceLastDigitChange = new Date();
 		timeWithDigit = false;
 		return true;	
 	}
 }
+
+// Changes time window, makes sure time widow does not go over the max
 function TimeWidowForDigit(timechange){
 	if (digitToShow == 1){
 		if ((timeWindowPerDigit[0] + timechange) < minTimeWindow){
@@ -190,8 +254,12 @@ function TimeWidowForDigit(timechange){
 
 }
 function SwitchDigits(){
-	//Reset numResults/numPrediction
+	//Adds occurance to digt tested
+	timesDigitTested[digitToShow] = timesDigitTested[digitToShow] + 1
+	console.log(digitToShow + " " + timesDigitTested[digitToShow])
+	//Starts a new - for meanPredictionAccuracy
 	numPrediction = 0;
+
 	if (digitToShow == 1){
 		digitToShow = 2;
 	} else if (digitToShow == 2){
@@ -226,14 +294,11 @@ function SwitchDigits(){
 function Train(){
     trainingCompleted = true;
     for (var i = 0; i < train8.shape[3]; i++) {
-    	//For digit 0 HOLD HIGHT ABOVE
+    	//For digit 0 HOLD HIGHT ABOVE & TO THE LEFT!
       	var features = train0.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),0);
       	console.log(i + " " + features + " " + 0);
-      	// var features = train0G2.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),0);
-      	// console.log(i + " " + features + " " + 0);
-
+      	// 1
       	// features = train0Goldman.pick(null,null,null,i).reshape(1,120);
       	// knnClassifier.addExample(features.tolist(),0);
       	// console.log(i + " " + features + " " + 0);
@@ -245,6 +310,7 @@ function Train(){
 		features = train1McLaughlin.pick(null,null,null,i).reshape(1,120);
 		knnClassifier.addExample(features.tolist(),1);
 		console.log(i + " " + features + " " + 1 + "b");
+		// 1
 		// features = train1Bongard.pick(null,null,null,i).reshape(1,120);
 		// knnClassifier.addExample(features.tolist(),1);
 		// console.log(i + " " + features + " " + 1 + "c");
@@ -260,16 +326,13 @@ function Train(){
       	features = train2Neff.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),2);
       	console.log(i + " " + features + " " + 2);
-      	// features = train2Goldman.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),1);
-      	// console.log(i + " " + features + " " + 1 + "d");
 
       	//For digit 3 have to FLATTEN hand right above 
       	features = train3.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),3);
       	//console.log(i + " " + features + " " + 3);
 
-      	//Digit 4 is amazing, hand can be anywhere (go up)
+      	//Digit 4 is amazing, hand can be anywhere (go up) UP!
       	features = train4.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),4);
       	//console.log(i + " " + features + " " + 4);
@@ -281,33 +344,38 @@ function Train(){
       	features = train5Manian.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),5);
       	console.log(i + " " + features + " " + 5);
+      	//1
+      	// features = train5Goldman.pick(null,null,null,i).reshape(1,120);
+      	// knnClassifier.addExample(features.tolist(),5);
+      	// console.log(i + " " + features + " " + 5);
 
 
       	//Digit 6 have to FLATTEN hand directly above (go down)
-      	// features = train6.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),6);
-      	//console.log(i + " " + features + " " + 6);
+      	features = train6.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),6);
+      	console.log(i + " " + features + " " + 6);
       	features = train6Bongard.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),6);
-      	//console.log(i + " " + features + " " + 6);
+      	console.log(i + " " + features + " " + 6);
 
       	//Digit 7 have to STRAITHEN hand directly above - BACK UP
-      	// features = train7.pick(null,null,null,i).reshape(1,120);
-      	// knnClassifier.addExample(features.tolist(),7);
-      	//console.log(i + " " + features + " " + 7);
+      	//1
+      	features = train7.pick(null,null,null,i).reshape(1,120);
+      	knnClassifier.addExample(features.tolist(),7);
+      	console.log(i + " " + features + " " + 7);
       	features = train7Bongard.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),7);
       	console.log(i + " " + features + " " + 7);
 
-      	//Digit 8 have to FLATTEN hand directly above - MID HEIGHT
+      	//Digit 8 have to FLATTEN hand directly above - LEFT & FOWARD ON SLANT
       	// features = train8.pick(null,null,null,i).reshape(1,120);
       	// knnClassifier.addExample(features.tolist(),8);
       	// console.log(i + " " + features + " " + 8);
       	features = train8Bongard.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),8);
-      	//console.log(i + " " + features + " " + 8);
+      	console.log(i + " " + features + " " + 8);
 
-      	//Digit 9 have to SLANT/ANGLR hand directly above
+      	//Digit 9 have to SLANT/ANGLR hand directly above - LEFT & FOWARD FINGERS OUT
       	features = train9.pick(null,null,null,i).reshape(1,120);
       	knnClassifier.addExample(features.tolist(),9);
       	console.log(i + " " + features + " " + 9);
@@ -335,7 +403,7 @@ function GotResults(err, result){
     //Accuracy
     //console.log(numPrediction + " " + meanPredictionAccuracy + " " + currentPrediction);
     
-    //console.log(meanPredictionAccuracy.toFixed(4) + " " + currentPrediction);
+    console.log(meanPredictionAccuracy.toFixed(2) + " " + currentPrediction);
 
 }
 
@@ -439,6 +507,7 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	line(canvasXTip, canvasYTip, canvasXBase, canvasYBase);	
 }
 
+//Centering stuff ----------------------------------------------------------------------
 //Does not matter where over the device a user signs a digit.
 //Center each frame of training data
 function CenterData(){
@@ -500,6 +569,7 @@ function CenterDataZ(){
 	}
 }
 
+//When hand is uncentered stuff --------------------------------------------------
 //Images Drawn when no hands & uncentered
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
@@ -522,7 +592,6 @@ function DrawArrowToward(){
 function DrawArrowAway(){
 	image(imgHandAway, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
 }
-
 //When hand is uncentered
 function HandIsUncentered(){
 	if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToTheUp() || HandIsTooFarToTheDown() || HandIsTooFarAway() || HandIsTooFarToward()){
@@ -585,7 +654,7 @@ function HandIsTooFarToward(){
 	}
 }
 
-
+//Sigin Stuff -----------------------------------------------------------------
 function SignIn(){
 	//Get username from html input using id
 	var username = document.getElementById('username').value;
@@ -629,3 +698,4 @@ function CreateSignInItem(username,list){
 		item2.innerHTML = 1;
 		list.appendChild(item2);
 }
+ 
