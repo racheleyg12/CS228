@@ -23,11 +23,18 @@ var timewindow;
 //Store current accuracies per digit
 var currentCorrectSum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var timesDigitTested = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-var currentMeanAccuracies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//Store pervious accuracies per digit
-var perviousCorrectAvg = [0, 0.75, 0.72, 0.79, 0, 0, 0, 0, 0];
-var printPerviousCorrectAvg = false;
+var currentCorrectAvg = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+//Store pervious accuracies per digit
+var perviousCorrectAvg = [0, 50.789, 55.8789, 50.890, 0, 0, 0, 0, 0];
+var printCorrectAvgOnce = false;
+//[0, "71.43", "42.86", "66.67", 0, 0, 0, 0, 0]
+
+//For Rankings
+var sessions = 2;
+var avgCorrectOverall = [0, 50, 50, 50, 0, 0, 0, 0, 0];
+var avgCorrectOverallUser1 = [0, 51, 56, 51, 0, 0, 0, 0, 0];
+var rank = 0;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -42,7 +49,7 @@ Leap.loop(controllerOptions, function(frame){
 		HandleState1(frame);
  	} else {
  		HandleState2(frame);
- 		printPerviousCorrectAvg = true;
+ 		printCorrectAvgOnce = true;
  	}
 });
 
@@ -60,17 +67,15 @@ function HandleState0(frame) {	//No hand(s)
 	//TrainKNNIfNotDoneYet()
 	DrawImageToHelpUserPutTheirHandOverTheDevice()
 	//Print Mean Accuracy, 
-	if (printPerviousCorrectAvg){
-		for (var i = 0; i < perviousCorrectAvg.length; i++) {
-			if (timesDigitTested[i] != 0){
-				perviousCorrectAvg[i] = currentCorrectSum[i]/timesDigitTested[i];
-			} else {
-				perviousCorrectAvg[i] = 0;
+	if (printCorrectAvgOnce){
+		for (var i = 0; i < currentCorrectAvg.length; i++) {
+			if (timesDigitTested[i] == 0){
+				currentCorrectAvg[i] = 0;
 			}
 			
 		}
-		console.log(perviousCorrectAvg);
-		printPerviousCorrectAvg = false;
+		console.log(currentCorrectAvg);
+		printCorrectAvgOnce = false;
 	}
 }
 function HandleState1(frame){	//Hand(s) uncentered
@@ -107,29 +112,52 @@ function HandleState2(frame){	//Hand(s) centered
 	strokeWeight(0);
 	textSize(20);
 	fill(50);
-	text('Current Average', window.innerWidth/8-70, window.innerHeight/2+60);
-	text('Correct:', window.innerWidth/8-70, window.innerHeight/2+80);
+	text('Current Average', window.innerWidth/8-95, window.innerHeight/2+60);
+	text('Correct:', window.innerWidth/8-95, window.innerHeight/2+80);
 	if (timesDigitTested[digitToShow] == 0){	//If first time signed of session
 		var printCorrect =  "N/A";
 	} else {	//Any sign after the first time signed of session
-		var printCorrect =  ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100).toFixed(2).toString() + "%";
+		var printCorrect =  currentCorrectAvg[digitToShow].toFixed(2).toString() + "%";
+
 	}
-	text(printCorrect, window.innerWidth/8-70, window.innerHeight/2+100);
+	text(printCorrect, window.innerWidth/8-95, window.innerHeight/2+100);
 
 	//Write Pervious Accuracy to the screen
-	text('Average Correct', window.innerWidth/8-50+200, window.innerHeight/2+60);
-	text('Last Session:', window.innerWidth/8-50+200, window.innerHeight/2+80);
-	var printPervCorrect = (perviousCorrectAvg[digitToShow].toFixed(2)*100).toString() + "%";
-	text(printPervCorrect, window.innerWidth/8-50+200, window.innerHeight/2+100);
+	text('Average Correct', window.innerWidth/8+175, window.innerHeight/2+60);
+	text('Last Session:', window.innerWidth/8+175, window.innerHeight/2+80);
+	var printPervCorrect = perviousCorrectAvg[digitToShow].toFixed(2).toString() + "%";
+	text(printPervCorrect, window.innerWidth/8+175, window.innerHeight/2+100);
 
+
+	//Update avg correct Over All Sessions, only once info is available 
+	if (timesDigitTested[digitToShow] == 0){
+		avgCorrectOverall[digitToShow] = perviousCorrectAvg[digitToShow];		
+	} else {
+		//currentCorrectSum[digitToShow] = ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100)
+		avgCorrectOverall[digitToShow] = (currentCorrectAvg[digitToShow] + perviousCorrectAvg[digitToShow]) / sessions;
+	}
 	//Write Average correct over all
-	text('Average Correct', window.innerWidth/8-70, window.innerHeight/2+60+100);
-	text('Over all Sessions:', window.innerWidth/8-70, window.innerHeight/2+80+100);
+	text('Average Correct', window.innerWidth/8-95, window.innerHeight/2+60+150);
+	text('Over all Sessions:', window.innerWidth/8-95, window.innerHeight/2+80+150);
+	var printAvgCorrectOverall = avgCorrectOverall[digitToShow].toFixed(2).toString() + "%";
+	text(printAvgCorrectOverall, window.innerWidth/8-95, window.innerHeight/2+100+150);
+	//Write Sessions
+	var printSessions = 'Sessions: ' + sessions;
+	text(printSessions, window.innerWidth/8-95, window.innerHeight/2+140+150);
 
 	//Users rank compared to others
-	text('You rank ', window.innerWidth/8-50+200, window.innerHeight/2+60+100);
-	text('out of ', window.innerWidth/8-50+200, window.innerHeight/2+60+100+20);
-	text('on overall number correct digits signed', window.innerWidth/8-50+200, window.innerHeight/2+60+100+40);
+	//rank = users
+	//count how many user you are greater than user>user1 -1
+	if(avgCorrectOverall[digitTested] > avgCorrectOverallUser1[digitTested]){
+		rank = 1
+	} else {
+		rank = 2
+	}
+	var users = 2;
+	var rankMsg = 'You rank ' + rank + ' out of ' + users;
+	text(rankMsg, window.innerWidth/8+175, window.innerHeight/2+60+150);
+	text('on average correctness', window.innerWidth/8+175, window.innerHeight/2+60+ 170);
+	text('of all users', window.innerWidth/8+175, window.innerHeight/2+60+ 190);
 
 }
 function DrawLowerRightPaneASLDigit(){
@@ -193,7 +221,8 @@ function TimeToSwitchDigits(){
 
 	//Must meet an accuracy of 50% or 5 seconds pass
 	timewindow = TimeWidowForDigit(0)	//No time change just getting time window
-	console.log(ElapsedInSeconds);
+	//Time Elapsed
+	//console.log(ElapsedInSeconds);
 
 	//Which ever is first: digit is signed corrected or time widow has run out
 	if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= timewindow){ //CHANGED!!!!!!!!!
@@ -201,19 +230,17 @@ function TimeToSwitchDigits(){
 		if (meanPredictionAccuracy >= .50 && ElapsedInSeconds <= timewindow){
 			//Shorten time widow
 			var changeTime = TimeWidowForDigit(-1);
-			console.log('Reduced');
-			console.log(changeTime);
+			// console.log('Reduced');
+			// console.log(changeTime);
 			//Correct ASL digit
 			currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 1
-			console.log(digitToShow + " " + currentCorrectSum[digitToShow])
 		} else if (ElapsedInSeconds >= timewindow) { 
 			// Digit is NOT signed correctly within timewindow
 			var changeTime = TimeWidowForDigit(1);
-			console.log('Increased');
-			console.log(changeTime);
+			// console.log('Increased');
+			// console.log(changeTime);
 			//Incorrect ASL digit
 			currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 0 
-			console.log(digitToShow + " " + currentCorrectSum[digitToShow])
 		}
 		timeSinceLastDigitChange = new Date();
 		timeWithDigit = false;
@@ -254,9 +281,12 @@ function TimeWidowForDigit(timechange){
 
 }
 function SwitchDigits(){
+	//Before digit it switched
 	//Adds occurance to digt tested
-	timesDigitTested[digitToShow] = timesDigitTested[digitToShow] + 1
-	console.log(digitToShow + " " + timesDigitTested[digitToShow])
+	timesDigitTested[digitToShow] = timesDigitTested[digitToShow] + 1;
+	//Calculate average correct
+	currentCorrectAvg[digitToShow] = ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100);
+	console.log(currentCorrectAvg[digitToShow]);
 	//Starts a new - for meanPredictionAccuracy
 	numPrediction = 0;
 
@@ -698,4 +728,3 @@ function CreateSignInItem(username,list){
 		item2.innerHTML = 1;
 		list.appendChild(item2);
 }
- 
