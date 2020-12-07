@@ -6,16 +6,16 @@ var imgHandUp;
 var imgHandForward;
 var imgHandAway;
 
-var imgDigit0;
-var imgDigit1;
-var imgDigit2;
-var imgDigit3;
-var imgDigit4;
-var imgDigit5;
-var imgDigit6;
-var imgDigit7;
-var imgDigit8;
-var imgDigit9;
+var imgASLDigit0;
+var imgASLDigit1;
+var imgASLDigit2;
+var imgASLDigit3;
+var imgASLDigit4;
+var imgASLDigit5;
+var imgASLDigit6;
+var imgASLDigit7;
+var imgASLDigit8;
+var imgASLDigit9;
 
 var img0;
 var img1;
@@ -39,6 +39,17 @@ var imgAns7;
 var imgAns8;
 var imgAns9;
 
+var imgLearningBinary0;
+var imgLearningBinary1;
+var imgLearningBinary2;
+var imgLearningBinary3;
+var imgLearningBinary4;
+var imgLearningBinary5;
+var imgLearningBinary6;
+var imgLearningBinary7;
+var imgLearningBinary8;
+var imgLearningBinary9;
+
 var imgBinary0;
 var imgBinary1;
 var imgBinary2;
@@ -61,16 +72,16 @@ function setup() {
 	imgHandToward = loadImage('https://i.imgur.com/IIcWBZy.png');
 	imgHandAway = loadImage('https://i.imgur.com/LJxSQA6.png');
 
-	imgDigit0 = loadImage('https://i.imgur.com/8AgabDB.png');
-	imgDigit1 = loadImage('https://i.imgur.com/xKUqQfv.png');
-	imgDigit2 = loadImage('https://i.imgur.com/gcokBQT.png');
-	imgDigit3 = loadImage('https://i.imgur.com/fJEpbO3.png');
-	imgDigit4 = loadImage('https://i.imgur.com/7NARzlD.png');
-	imgDigit5 = loadImage('https://i.imgur.com/rNQ7ZcB.png');
-	imgDigit6 = loadImage('https://i.imgur.com/YTjcmev.png');
-	imgDigit7 = loadImage('https://i.imgur.com/kHrlckl.png');
-	imgDigit8 = loadImage('https://i.imgur.com/xD05bGZ.png');
-	imgDigit9 = loadImage('https://i.imgur.com/9VdqrnK.png');
+	imgASLDigit0 = loadImage('https://i.imgur.com/ll3LtWi.png');
+	imgASLDigit1 = loadImage('https://i.imgur.com/qIuYiTr.png');
+	imgASLDigit2 = loadImage('https://i.imgur.com/bdz43v5.png');
+	imgASLDigit3 = loadImage('https://i.imgur.com/b2zL6iO.png');
+	imgASLDigit4 = loadImage('https://i.imgur.com/buD7tgT.png');
+	imgASLDigit5 = loadImage('https://i.imgur.com/Uw0GM89.png');
+	imgASLDigit6 = loadImage('https://i.imgur.com/T3UMVlS.png');
+	imgASLDigit7 = loadImage('https://i.imgur.com/6ZPmCo0.png');
+	imgASLDigit8 = loadImage('https://i.imgur.com/IEKBLZN.png');
+	imgASLDigit9 = loadImage('https://i.imgur.com/Nn2ifmj.png');
 
 	img0 = loadImage('https://i.imgur.com/wJzkOpe.png');
 	img1 = loadImage('https://i.imgur.com/He8ZR5y.png');
@@ -93,6 +104,17 @@ function setup() {
 	imgAns7 = loadImage('https://i.imgur.com/E9r2mIL.png');
 	imgAns8 = loadImage('https://i.imgur.com/5m63eVA.png');
 	imgAns9 = loadImage('https://i.imgur.com/Z58TA7K.png');
+
+	imgLearningBinary0 = loadImage('https://i.imgur.com/VUSlYey.png');
+	imgLearningBinary1 = loadImage('https://i.imgur.com/4H1JuZA.png');
+	imgLearningBinary2 = loadImage('https://i.imgur.com/RbFgzE8.png');
+	imgLearningBinary3 = loadImage('https://i.imgur.com/RZynDAL.png');
+	imgLearningBinary4 = loadImage('https://i.imgur.com/7qADZLW.png');
+	imgLearningBinary5 = loadImage('https://i.imgur.com/kyKx7Dh.png');
+	imgLearningBinary6 = loadImage('https://i.imgur.com/ollNY9d.png');
+	imgLearningBinary7 = loadImage('https://i.postimg.cc/fWH1cqv9/Screen-Shot-2020-12-06-at-2-24-38-PM.png');
+	imgLearningBinary8 = loadImage('https://i.postimg.cc/VLxGgx0d/Screen-Shot-2020-12-06-at-2-24-49-PM.png');
+	imgLearningBinary9 = loadImage('https://i.postimg.cc/0QXZwFq5/Screen-Shot-2020-12-06-at-2-25-05-PM.png');
 
 	imgBinary0 = loadImage('https://i.imgur.com/YNjfQKj.png');
 	imgBinary1 = loadImage('https://i.imgur.com/U9Pjg59.png');

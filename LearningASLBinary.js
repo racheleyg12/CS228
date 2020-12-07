@@ -9,16 +9,34 @@ var predictedClassLabels = nj.zeros(2);
 var oneFrameOfData = nj.zeros([5,4,6]); 
 var numPrediction = 0;
 var meanPredictionAccuracy = 0;
-var digitTested = 1;
+var digitTested = 0;
 var programState = 0;
-var digitToShow = 0;
+var digitToShow = 2;
 var timeSinceLastDigitChange = new Date();
-var accuracyReached = false
+//Keep tracks of digits 0-9 that have been chosen by random
+var randomOrder = [];
+//Keep track of randomOrder index
+var randomOrderIndex = 0;
+//Determine Random order every run through all 0-9 digit after one run complete
+var choseRandomDigits = false;
+//Once the user goes through two runs the learning is completed
+var learningCompleted = false;
+//Number of digits correct
+var numCorrect = 0;
+//Number of digits shown
+var numDigitsShown = 0;
+//Starts time with corresponding digit
+var timeWithDigit = false;
+//Show images with scaffolding
+var scaffolding = true;
+//stateOfOrder moves between teaching ASL & Binary to Binary to Binary in random order
+var stateOfOrder = 1;
+//Switches to random order
+var randomOrder = false;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
     if (trainingCompleted == false){
-        //TrainKNNIfNotDoneYet()
         Train();     
     }
 	DetermineState(frame);
@@ -69,65 +87,140 @@ function HandleState1(frame){	//Hand(s) uncentered
 function HandleState2(frame){	//Hand(s) centered
 	HandleFrame(frame); 
 	DrawLowerRightPanel();
+	//Starts timer after training is done/loaded
+	if (timeWithDigit == false){
+		timeSinceLastDigitChange = new Date();
+		timeWithDigit = true;
+	}
 	DetermineWhetherToSwitchDigits();
 }
 function DrawLowerRightPanel(){
-	if (digitToShow == 0){
-		image(imgASLDigit0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 1){
-		image(imgASLDigit1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if(digitToShow == 2){	
-		image(imgASLDigit2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 3){
-		image(imgASLDigit3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 4){
-		image(imgASLDigit4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 5){
-		image(imgASLDigit5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 6){
-		image(imgASLDigit6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 7){
-		image(imgASLDigit7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 8){
-		image(imgASLDigit8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} else if (digitToShow == 9){
-		image(imgASLDigit9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
-	} 
+	if(scaffolding){
+		if (digitToShow == 0){
+			image(imgLearningBinary0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 1){
+			image(imgLearningBinary1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if(digitToShow == 2){	
+			image(imgLearningBinary2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 3){
+			image(imgLearningBinary3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 4){
+			image(imgLearningBinary4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 5){
+			image(imgLearningBinary5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 6){
+			image(imgLearningBinary6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 7){
+			image(imgLearningBinary7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 8){
+			image(imgLearningBinary8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 9){
+			image(imgLearningBinary9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} 
+	} else { //false
+		if (digitToShow == 0){
+			image(imgBinary0, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 1){
+			image(imgBinary1, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if(digitToShow == 2){	
+			image(imgBinary2, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 3){
+			image(imgBinary3, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 4){
+			image(imgBinary4, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 5){
+			image(imgBinary5, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 6){
+			image(imgBinary6, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 7){
+			image(imgBinary7, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 8){
+			image(imgBinary8, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} else if (digitToShow == 9){
+			image(imgBinary9, window.innerWidth/2, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+		} 
+	}
 }
 
 //SWITCHING DIGITS-------------------------------------------------------------------
 function DetermineWhetherToSwitchDigits() {
 	if(TimeToSwitchDigits() == true){
-		SwitchDigits();
+		if(randomOrder == false){
+			SwitchDigits();
+		} else {
+			SwitchDigitsRandomly();
+		}
 	}
 }
 function TimeToSwitchDigits(){
-	//Change digit - Must meet an accuracy of 70%
-	if (meanPredictionAccuracy >= .50){
-		if (accuracyReached == false){
-			timeSinceLastDigitChange = new Date();
-			accuracyReached = true
+	//Change digit - Must meet an accuracy of 50% or after 10 seconds have passed
+	var currentTime = new Date();
+	var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
+	var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
+
+	console.log(ElapsedInSeconds);
+
+	//Once user gets the digit correct
+
+	//if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= 10){
+	if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= 10){
+		//Resets time for new digit
+		timeWithDigit = false;
+		//If digit is correct, counts the number of digits correct
+		if (meanPredictionAccuracy >= .50){
+			numCorrect = numCorrect + 1;
 		}
-		var currentTime = new Date();
-		var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
-		var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
-		
-		//Must stay 50% for 3 seconds
-		if (ElapsedInSeconds >= 3){
-			timeSinceLastDigitChange = new Date();
-			accuracyReached = true
-			return true;
-		}	
+		//Counts the number of digits shown
+		numDigitsShown = numDigitsShown + 1
+
+		//Before it switches to the next digit
+		//If this is the 10th digit shown
+		//And the user has signed all the digits shown correct 
+		//Remove scaffolding 
+		console.log("Digits shown: " + numDigitsShown);
+		console.log("Digits correct: "+ numCorrect);
+		if (numDigitsShown == 5 && numCorrect == numDigitsShown){
+			//Resets numDigitsShown and numCorrect
+			//Turns the scafolding off
+			numDigitsShown = 0;
+			numCorrect = 0;
+			scaffolding = false;
+			//Goes up in stateOfOrder, stateOfOrder can not be higher than 3
+			if (stateOfOrder < 3){
+				stateOfOrder = stateOfOrder + 1;
+			}
+			
+		} else if (numDigitsShown == 5 && numCorrect != numDigitsShown) {
+			//Sets the scafolding on again
+			//Resets numDigitsShown and numCorrect
+			numDigitsShown = 0;
+			numCorrect = 0;
+			scaffolding = true;
+			//Go down a stateOfOrder
+			if (stateOfOrder != 1){
+				stateOfOrder = stateOfOrder - 1;
+			}
+
+		}
+
+		console.log("STATE: "+ stateOfOrder);
+		//Determines stateOfOrder
+		// if (stateOfOrder = 3) {
+		// 	randomOrder = true;
+		// } else {
+		// 	randomOrder = false;
+		// }
+
+		//Time to move to the next digit
+		return true
 	}
 }
 function SwitchDigits(){
 	//Reset numResults/numPrediction
 	numPrediction = 0;
-	if (digitToShow == 0){
-		digitToShow = 1;
-	} else if (digitToShow == 1){
-		digitToShow = 2;
-	} else if (digitToShow == 2){
+	
+
+	if (digitToShow == 2){
 		digitToShow = 3;
 	} else if (digitToShow == 3){
 		digitToShow = 4;
@@ -136,14 +229,81 @@ function SwitchDigits(){
 	} else if (digitToShow == 5){
 		digitToShow = 6;
 	} else if (digitToShow == 6){
-		digitToShow = 7;
-	} else if (digitToShow == 7){
-		digitToShow = 8;
-	} else if (digitToShow == 8){
-		digitToShow = 9;
-	} else if (digitToShow == 9){
-		digitToShow = 0;
+		digitToShow = 2;
 	}
+
+
+	// if (digitToShow == 0){
+	// 	digitToShow = 1;
+	// } else if (digitToShow == 1){
+	// 	digitToShow = 2;
+	// } else if (digitToShow == 2){
+	// 	digitToShow = 3;
+	// } else if (digitToShow == 3){
+	// 	digitToShow = 4;
+	// } else if (digitToShow == 4){
+	// 	digitToShow = 5;
+	// } else if (digitToShow == 5){
+	// 	digitToShow = 6;
+	// } else if (digitToShow == 6){
+	// 	digitToShow = 7;
+	// } else if (digitToShow == 7){
+	// 	digitToShow = 8;
+	// } else if (digitToShow == 8){
+	// 	digitToShow = 9;
+	// } else if (digitToShow == 9){
+	// 	digitToShow = 0;
+	// }
+
+	// if (digitToShow == 2){
+	// 	digitToShow = 3;
+	// } else if (digitToShow == 3){
+	// 	digitToShow = 4;
+	// } else if (digitToShow == 4){
+	// 	digitToShow = 5;
+	// } else if (digitToShow == 5){
+	// 	digitToShow = 6;
+	// } else if (digitToShow == 6){
+	// 	digitToShow == 2
+	// }
+
+}
+
+function SwitchDigitsRandomly(){
+	//Reset numResults/numPrediction
+	numPrediction = 0;
+	//Found: https://stackoverflow.com/questions/18806210/generating-non-repeating-random-numbers-in-js
+	//Test: https://www.w3schools.com/js/tryit.asp?filename=tryjs_editor
+	
+	//If array is empty, populates it
+	if (choseRandomDigits.length == 0){
+		choseRandomDigits = true;
+		//Starts at the first index
+		randomOrderIndex = 0;
+	} else {
+		choseRandomDigits = false;
+		//Increase the index
+		randomOrderIndex = randomOrderIndex + 1
+	}
+
+	//Makes an array of randomly chosen digits 0-9
+	if (choseRandomDigits){
+		//var digits = [0,1,2,3,4,5,6,7,8,9]
+		//var digits = [0,1,2,3,4];
+		var digits = [0,1,2,3,4];
+		i = digits.length;
+		j = 0;
+
+		while (i--) {
+		    j = Math.floor(Math.random() * (i+1));
+		    randomOrder.push(nums[j]);
+		    nums.splice(j,1);
+		}	
+	}
+
+	//Gets random digit from array
+	digitToShow = randomOrder[randomOrderIndex];
+	
 }
 //TRAINING-----------------------------------------------------------------
 function Train(){
@@ -360,7 +520,7 @@ function HandleBone(bone, fingerIndex, InteractionBox){
 	//Draw lines
 	line(canvasXTip, canvasYTip, canvasXBase, canvasYBase);	
 }
-
+//Centering--------------------------------------------------------------------------------------
 //Does not matter where over the device a user signs a digit.
 //Center each frame of training data
 function CenterData(){
@@ -421,7 +581,7 @@ function CenterDataZ(){
 		}
 	}
 }
-
+//Centering Hand Information-------------------------------------------------------------------
 //Images Drawn when no hands & uncentered
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 	image(img, 0, 0, window.innerWidth/2, window.innerHeight/2);
@@ -444,7 +604,6 @@ function DrawArrowToward(){
 function DrawArrowAway(){
 	image(imgHandAway, window.innerWidth/2, 0, window.innerWidth/2, window.innerHeight/2);
 }
-
 //When hand is uncentered
 function HandIsUncentered(){
 	if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToTheUp() || HandIsTooFarToTheDown() || HandIsTooFarAway() || HandIsTooFarToward()){
@@ -506,8 +665,7 @@ function HandIsTooFarToward(){
 		return false;
 	}
 }
-
-
+//Login Stuff------------------------------------------------------------------------------------
 function SignIn(){
 	//Get username from html input using id
 	var username = document.getElementById('username').value;

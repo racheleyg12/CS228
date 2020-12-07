@@ -28,7 +28,6 @@ var currentCorrectAvg = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 //Store pervious accuracies per digit
 var perviousCorrectAvg = [0, 50.789, 55.8789, 50.890, 0, 0, 0, 0, 0];
 var printCorrectAvgOnce = false;
-//[0, "71.43", "42.86", "66.67", 0, 0, 0, 0, 0]
 
 //For Rankings
 var sessions = 2;
