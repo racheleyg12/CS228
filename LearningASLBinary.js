@@ -11,10 +11,13 @@ var numPrediction = 0;
 var meanPredictionAccuracy = 0;
 var digitTested = 0;
 var programState = 0;
-var digitToShow = 2;
+var digitToShow = 0;
 var timeSinceLastDigitChange = new Date();
-//Keep tracks of digits 0-9 that have been chosen by random
-var randomOrder = [];
+
+//Keep tracks of digits 0-9 that have been chosen by random/ in random order
+var digitsInrandomOrder = [];
+//Holds digits that are chosen randomly 
+var digits = [];
 //Keep track of randomOrder index
 var randomOrderIndex = 0;
 //Determine Random order every run through all 0-9 digit after one run complete
@@ -33,6 +36,15 @@ var scaffolding = true;
 var stateOfOrder = 1;
 //Switches to random order
 var randomOrder = false;
+
+//Show lower left hand panel for a second
+var showLowerLeft = new Date();
+//Show if user got digit correct or wrong
+var digitCorrect = false;
+//Show lower left hand panel once
+var showLowerLeftOnceAfter = false;
+//Show lower left hand panel once
+var startTimer = false;
 
 Leap.loop(controllerOptions, function(frame){
 	clear();
@@ -85,14 +97,33 @@ function HandleState1(frame){	//Hand(s) uncentered
 	}
 }
 function HandleState2(frame){	//Hand(s) centered
-	HandleFrame(frame); 
-	DrawLowerRightPanel();
+	HandleFrame(frame);
 	//Starts timer after training is done/loaded
 	if (timeWithDigit == false){
 		timeSinceLastDigitChange = new Date();
 		timeWithDigit = true;
 	}
+	DrawLowerRightPanel();
+	
 	DetermineWhetherToSwitchDigits();
+
+	//Draw planel showing right or wrong for a second
+	if (startTimer == true){
+		showLowerLeft = new Date();
+	}
+	if (showLowerLeftOnceAfter == true){
+		var currentTime = new Date();
+		var ElapsedInMilliseconds = showLowerLeft - currentTime;
+		var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
+
+		if (ElapsedInSeconds => 2){
+			showLowerLeftOnceAfter = false;
+			startTimer = false;
+		}
+		DrawLowerLeftPanel();
+	}
+
+	
 }
 function DrawLowerRightPanel(){
 	if(scaffolding){
@@ -141,7 +172,14 @@ function DrawLowerRightPanel(){
 		} 
 	}
 }
-
+function DrawLowerLeftPanel(){
+	if (digitCorrect == true){
+		image(imgCorrect, 0, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	} else {
+		image(imgIncorrect, 0, window.innerHeight/2, window.innerWidth/2, window.innerHeight/2);
+	}
+	
+}
 //SWITCHING DIGITS-------------------------------------------------------------------
 function DetermineWhetherToSwitchDigits() {
 	if(TimeToSwitchDigits() == true){
@@ -163,13 +201,19 @@ function TimeToSwitchDigits(){
 	//Once user gets the digit correct
 
 	//if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= 10){
-	if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= 10){
-		//Resets time for new digit
+	if (meanPredictionAccuracy >= .50 || ElapsedInSeconds >= 6){
+		
+		//Resets time for next/new digit
 		timeWithDigit = false;
+
 		//If digit is correct, counts the number of digits correct
 		if (meanPredictionAccuracy >= .50){
 			numCorrect = numCorrect + 1;
+			digitCorrect = true;
+		} else {
+			digitCorrect = false;
 		}
+
 		//Counts the number of digits shown
 		numDigitsShown = numDigitsShown + 1
 
@@ -179,7 +223,7 @@ function TimeToSwitchDigits(){
 		//Remove scaffolding 
 		console.log("Digits shown: " + numDigitsShown);
 		console.log("Digits correct: "+ numCorrect);
-		if (numDigitsShown == 5 && numCorrect == numDigitsShown){
+		if (numDigitsShown == 8 && numCorrect == numDigitsShown){
 			//Resets numDigitsShown and numCorrect
 			//Turns the scafolding off
 			numDigitsShown = 0;
@@ -190,7 +234,7 @@ function TimeToSwitchDigits(){
 				stateOfOrder = stateOfOrder + 1;
 			}
 			
-		} else if (numDigitsShown == 5 && numCorrect != numDigitsShown) {
+		} else if (numDigitsShown == 8 && numCorrect != numDigitsShown) {
 			//Sets the scafolding on again
 			//Resets numDigitsShown and numCorrect
 			numDigitsShown = 0;
@@ -202,14 +246,18 @@ function TimeToSwitchDigits(){
 			}
 
 		}
+		//Show status of right or wrong 
+		showLowerLeftOnceAfter = true;
+		showLowerLeft = new Date();
+		startTimer = true
 
 		console.log("STATE: "+ stateOfOrder);
 		//Determines stateOfOrder
-		// if (stateOfOrder = 3) {
-		// 	randomOrder = true;
-		// } else {
-		// 	randomOrder = false;
-		// }
+		if (stateOfOrder == 3) {
+			randomOrder = true;
+		} else {
+			randomOrder = false;
+		}
 
 		//Time to move to the next digit
 		return true
@@ -218,9 +266,36 @@ function TimeToSwitchDigits(){
 function SwitchDigits(){
 	//Reset numResults/numPrediction
 	numPrediction = 0;
-	
 
-	if (digitToShow == 2){
+	// if (digitToShow == 1){
+	// 	digitToShow = 2;
+	// } else if (digitToShow == 2){
+	// 	digitToShow = 3;
+	// } else if (digitToShow == 3){
+	// 	digitToShow = 4;
+	// } else if (digitToShow == 4){
+	// 	digitToShow = 5;
+	// } else if (digitToShow == 5){
+	// 	digitToShow = 1;
+	// }
+
+	// if (digitToShow == 2){
+	// 	digitToShow = 3;
+	// } else if (digitToShow == 3){
+	// 	digitToShow = 4;
+	// } else if (digitToShow == 4){
+	// 	digitToShow = 5;
+	// } else if (digitToShow == 5){
+	// 	digitToShow = 6;
+	// } else if (digitToShow == 6){
+	// 	digitToShow = 2;
+	// }
+
+	if (digitToShow == 0){
+		digitToShow = 1;
+	} else if (digitToShow == 1){
+		digitToShow = 2;
+	} else if (digitToShow == 2){
 		digitToShow = 3;
 	} else if (digitToShow == 3){
 		digitToShow = 4;
@@ -229,7 +304,9 @@ function SwitchDigits(){
 	} else if (digitToShow == 5){
 		digitToShow = 6;
 	} else if (digitToShow == 6){
-		digitToShow = 2;
+		digitToShow = 7;
+	} else if (digitToShow == 7){
+		digitToShow = 0;
 	}
 
 
@@ -255,17 +332,6 @@ function SwitchDigits(){
 	// 	digitToShow = 0;
 	// }
 
-	// if (digitToShow == 2){
-	// 	digitToShow = 3;
-	// } else if (digitToShow == 3){
-	// 	digitToShow = 4;
-	// } else if (digitToShow == 4){
-	// 	digitToShow = 5;
-	// } else if (digitToShow == 5){
-	// 	digitToShow = 6;
-	// } else if (digitToShow == 6){
-	// 	digitToShow == 2
-	// }
 
 }
 
@@ -276,11 +342,16 @@ function SwitchDigitsRandomly(){
 	//Test: https://www.w3schools.com/js/tryit.asp?filename=tryjs_editor
 	
 	//If array is empty, populates it
-	if (choseRandomDigits.length == 0){
+	if (digitsInrandomOrder.length == 0 || randomOrderIndex == 9){
+		console.log("digits ARRAY IS EMPTY");
+		//digits = [1, 2, 3];
+		//digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+		digits = [0, 1, 2, 3, 4, 5, 6, 7];
 		choseRandomDigits = true;
 		//Starts at the first index
 		randomOrderIndex = 0;
 	} else {
+		console.log("RANDOM ARRAY IS NOT EMPTY");
 		choseRandomDigits = false;
 		//Increase the index
 		randomOrderIndex = randomOrderIndex + 1
@@ -288,22 +359,22 @@ function SwitchDigitsRandomly(){
 
 	//Makes an array of randomly chosen digits 0-9
 	if (choseRandomDigits){
-		//var digits = [0,1,2,3,4,5,6,7,8,9]
-		//var digits = [0,1,2,3,4];
-		var digits = [0,1,2,3,4];
 		i = digits.length;
 		j = 0;
-
 		while (i--) {
+			//Picks a random index from 0 to i
 		    j = Math.floor(Math.random() * (i+1));
-		    randomOrder.push(nums[j]);
-		    nums.splice(j,1);
+		    //Places digit at index into random array
+		    digitsInrandomOrder.push(digits[j]);
+		    //Takes the digit out of the array
+		    digits.splice(j,1);
 		}	
 	}
-
+	console.log(digitsInrandomOrder);
+	console.log(randomOrderIndex);
+	console.log(digitsInrandomOrder[randomOrderIndex]);
 	//Gets random digit from array
-	digitToShow = randomOrder[randomOrderIndex];
-	
+	digitToShow = digitsInrandomOrder[randomOrderIndex];
 }
 //TRAINING-----------------------------------------------------------------
 function Train(){

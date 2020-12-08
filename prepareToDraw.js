@@ -61,6 +61,9 @@ var imgBinary7;
 var imgBinary8;
 var imgBinary9;
 
+var imgCorrect;
+var imgIncorrect;
+
 //drawing canvas is ‘spread’ over the entire browser window
 function setup() {
 	createCanvas(window.innerWidth,window.innerHeight);
@@ -127,6 +130,8 @@ function setup() {
 	imgBinary8 = loadImage('https://i.imgur.com/czUevGt.png');
 	imgBinary9 = loadImage('https://i.imgur.com/srbF70e.png');
 
+	imgCorrect = loadImage('https://i.imgur.com/f0ywA6t.png');
+	imgIncorrect = loadImage('https://i.imgur.com/KsmXhUC.png');
 	//You could even do other languages like chinese
 
 }
